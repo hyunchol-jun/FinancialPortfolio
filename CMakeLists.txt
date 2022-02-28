@@ -17,6 +17,7 @@ enable_testing()
 add_executable(
     FinancialPortfolioTest
     src/FinancialPortfolioTest.cpp
+    src/FinancialPortfolio.cpp
     )
 
 target_link_libraries(

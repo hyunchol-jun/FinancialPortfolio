@@ -2,31 +2,22 @@
 #define FinancialPortfolio_h
 #include <string>
 
+class InvalidPurchaseException: public std::exception
+{
+
+};
+
 class FinancialPortfolio
 {
 public:
-    FinancialPortfolio()
-    {
-        m_empty = true;
-    }
+    FinancialPortfolio();
 
-    bool isEmpty() const
-    {
-        return m_empty;
-    }
-
-    void purchase(const std::string& ticker, int quantity)
-    {
-        m_empty = false;
-    }
-
-    int shareCount(const std::string& ticker)
-    {
-        return 0;
-    }
+    bool isEmpty() const;
+    void purchase(const std::string& ticker, int quantity);
+    int shareCount(const std::string& ticker);
 
 private:
-    bool m_empty{};
+    int m_shareCount{};
 };
 
 #endif
