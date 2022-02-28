@@ -1,7 +1,7 @@
 #ifndef FinancialPortfolio_h
 #define FinancialPortfolio_h
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class InvalidPurchaseException: public std::exception
 {
@@ -15,10 +15,11 @@ public:
 
     bool isEmpty() const;
     void purchase(const std::string& ticker, int quantity);
+    void sell(const std::string& ticker, int quantity);
     int shareCount(const std::string& ticker);
 
 private:
-    std::map<std::string, int> m_holdings{};
+    std::unordered_map<std::string, int> m_holdings{};
 };
 
 #endif

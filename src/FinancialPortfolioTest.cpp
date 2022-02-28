@@ -59,3 +59,10 @@ TEST_F(AFinancialPortfolio,
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(8));
 }
 
+TEST_F(AFinancialPortfolio, ReducesShareCountOfSymbolOnSell)
+{
+    portfolio.purchase(IBM, 5);
+    portfolio.sell(IBM, 3);
+
+    ASSERT_THAT(portfolio.shareCount(IBM), Eq(2));
+}

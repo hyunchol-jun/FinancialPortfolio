@@ -19,6 +19,11 @@ void FinancialPortfolio::purchase(const std::string& ticker, int quantity)
     m_holdings[ticker] += quantity;
 }
 
+void FinancialPortfolio::sell(const std::string& ticker, int quantity)
+{
+    m_holdings[ticker] -= quantity;
+}
+
 int FinancialPortfolio::shareCount(const std::string& ticker)
 {
     return m_holdings[ticker];
