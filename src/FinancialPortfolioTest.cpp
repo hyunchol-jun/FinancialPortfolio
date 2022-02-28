@@ -8,9 +8,11 @@ class AFinancialPortfolio: public Test
 {
 protected:
     static const std::string IBM;
+    static const std::string SAMSUNG;
     FinancialPortfolio portfolio;
 };
 const std::string AFinancialPortfolio::IBM{"IBM"};
+const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
 
 TEST_F(AFinancialPortfolio, IsEmptyWhenCreated)
 {
@@ -42,9 +44,18 @@ TEST_F(AFinancialPortfolio, ThrowsOnPurchaseOfZeroShares)
 
 TEST_F(AFinancialPortfolio, AnswersShareCountForAppropriateSymbol)
 {
-    portfolio.purchase(IBM, 1);
-    portfolio.purchase(IBM, 2);
+    portfolio.purchase(IBM, 10);
+    portfolio.purchase(SAMSUNG, 5);
     
-    ASSERT_THAT(portfolio.shareCount(IBM), Eq(3));
+    ASSERT_THAT(portfolio.shareCount(IBM), Eq(10));
+}
+
+TEST_F(AFinancialPortfolio, 
+        ShareCountReflectsAccumulatedPurchasesOfSameSymbol)
+{
+    portfolio.purchase(IBM, 5);
+    portfolio.purchase(IBM, 3);
+
+    ASSERT_THAT(portfolio.shareCount(IBM), Eq(8));
 }
 

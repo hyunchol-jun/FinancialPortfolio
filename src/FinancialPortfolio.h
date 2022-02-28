@@ -1,6 +1,7 @@
 #ifndef FinancialPortfolio_h
 #define FinancialPortfolio_h
 #include <string>
+#include <map>
 
 class InvalidPurchaseException: public std::exception
 {
@@ -17,7 +18,7 @@ public:
     int shareCount(const std::string& ticker);
 
 private:
-    int m_shareCount{};
+    std::map<std::string, int> m_holdings{};
 };
 
 #endif
