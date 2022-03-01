@@ -1,9 +1,11 @@
 #include "FinancialPortfolio.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <iostream>
 
 using namespace ::testing;
+using namespace boost::gregorian;
 
 class AFinancialPortfolio: public Test
 {
@@ -11,7 +13,35 @@ protected:
     static const std::string IBM;
     static const std::string SAMSUNG;
     FinancialPortfolio portfolio;
+    static const date ArbitraryDate;
+
+    void purchase(
+            const std::string& ticker,
+            int shareCount,
+            const date& 
+                transactionDate=AFinancialPortfolio::ArbitraryDate)
+    {
+        portfolio.purchase(ticker, shareCount, transactionDate);
+    }
+
+    void sell(
+            const std::string& ticker,
+            int shareCount,
+            const date&
+                transactionDate=AFinancialPortfolio::ArbitraryDate)
+    {
+        portfolio.sell(ticker, shareCount, transactionDate);
+    }
+
+    void ASSERT_PURCHASE(
+            PurchaseRecord& purchase, int shareCount, const date& date)
+    {
+        ASSERT_THAT(purchase.shareCount, Eq(shareCount));
+        ASSERT_THAT(purchase.date, Eq(date));
+    }
 };
+
+const date AFinancialPortfolio::ArbitraryDate(2014, Sep, 5);
 const std::string AFinancialPortfolio::IBM{"IBM"};
 const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
 
@@ -62,7 +92,7 @@ TEST_F(AFinancialPortfolio,
 
 TEST_F(AFinancialPortfolio, ReducesShareCountOfSymbolOnSell)
 {
-    portfolio.purchase(IBM, 5);
+    purchase(IBM, 5);
     portfolio.sell(IBM, 3);
 
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(2));
@@ -77,10 +107,20 @@ TEST_F(AFinancialPortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
 
 TEST_F(AFinancialPortfolio, AnswersThePurchaseRecordForASinglePurchase)
 {
-    portfolio.purchase(SAMSUNG, 5);
+    purchase(SAMSUNG, 5, ArbitraryDate);
+
     auto purchases = portfolio.purchases(SAMSUNG);
 
-    auto purchase = purchases[0];
-    ASSERT_THAT(purchase.shareCount, Eq(5));
-    ASSERT_THAT(purchase.date, Eq(FinancialPortfolio::FIXED_PURCHASE_DATE));
+    ASSERT_PURCHASE(purchases[0], 5, ArbitraryDate);
 }
+
+TEST_F(AFinancialPortfolio, IncludesSalesInPurchaseRecords)
+{
+    purchase(SAMSUNG, 10);
+    sell(SAMSUNG, 5, ArbitraryDate);
+    
+    auto sales = portfolio.purchases(SAMSUNG);
+
+    ASSERT_PURCHASE(sales[1], -5, ArbitraryDate);
+}
+

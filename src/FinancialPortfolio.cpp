@@ -28,10 +28,13 @@ std::vector<PurchaseRecord>
         return m_purchases;
     }
 
-void FinancialPortfolio::sell(const std::string& ticker, int quantity)
+void FinancialPortfolio::sell(const std::string& ticker, 
+                              int quantity,
+                              const boost::gregorian::date& transactionDate)
 {
     if (quantity > shareCount(ticker)) throw InvalidSellException();
     m_holdings[ticker] -= quantity;
+    m_purchases.push_back(PurchaseRecord(-quantity, transactionDate));
 }
 
 int FinancialPortfolio::shareCount(const std::string& ticker)
