@@ -70,7 +70,12 @@ TEST_F(AFinancialPortfolio, AnswersShareCountForPurchasedSymbol)
 
 TEST_F(AFinancialPortfolio, ThrowsOnPurchaseOfZeroShares)
 {
-    ASSERT_THROW(portfolio.purchase(IBM, 0), InvalidPurchaseException);
+    ASSERT_THROW(portfolio.purchase(IBM, 0), ShareCountCannotBeZeroException);
+}
+
+TEST_F(AFinancialPortfolio, ThrowsOnSellOfZeroShares)
+{
+    ASSERT_THROW(portfolio.sell(IBM, 0), ShareCountCannotBeZeroException);
 }
 
 TEST_F(AFinancialPortfolio, AnswersShareCountForAppropriateSymbol)

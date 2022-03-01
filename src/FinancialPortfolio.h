@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-class InvalidPurchaseException: public std::exception
+class ShareCountCannotBeZeroException: public std::exception
 {
 };
 
@@ -34,6 +34,8 @@ public:
     void sell(const std::string& ticker, int quantity,
                   const boost::gregorian::date& transactionDate=
                   FIXED_PURCHASE_DATE);
+    void transact(const std::string& ticker, int shareChange,
+                  const boost::gregorian::date& transactionDate);
     int shareCount(const std::string& ticker);
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 
