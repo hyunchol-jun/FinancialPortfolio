@@ -1,6 +1,7 @@
 #include "FinancialPortfolio.h"
+using namespace boost::gregorian;
 
-FinancialPortfolio::FinancialPortfolio() {}
+const date FinancialPortfolio::FIXED_PURCHASE_DATE(date(2014, Jan, 1));
 
 bool FinancialPortfolio::isEmpty() const
 {
@@ -17,15 +18,25 @@ void FinancialPortfolio::purchase(const std::string& ticker, int quantity)
 {
     if (quantity <= 0) throw InvalidPurchaseException();
     m_holdings[ticker] += quantity;
+    m_purchases.push_back(PurchaseRecord(quantity, FIXED_PURCHASE_DATE));
 }
+
+std::vector<PurchaseRecord> 
+        FinancialPortfolio::purchases(const std::string& ticker) const 
+    {
+        return m_purchases;
+    }
 
 void FinancialPortfolio::sell(const std::string& ticker, int quantity)
 {
+    if (quantity > shareCount(ticker)) throw InvalidSellException();
     m_holdings[ticker] -= quantity;
 }
 
 int FinancialPortfolio::shareCount(const std::string& ticker)
 {
-    return m_holdings[ticker];
+    auto iter = m_holdings.find(ticker);
+    if (iter == m_holdings.end()) return 0;
+    return iter->second;
 }
 

@@ -1,6 +1,7 @@
 #include "FinancialPortfolio.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <iostream>
 
 using namespace ::testing;
 
@@ -65,4 +66,21 @@ TEST_F(AFinancialPortfolio, ReducesShareCountOfSymbolOnSell)
     portfolio.sell(IBM, 3);
 
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(2));
+}
+
+TEST_F(AFinancialPortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
+{
+    portfolio.purchase(IBM, 5);
+    
+    ASSERT_THROW(portfolio.sell(IBM, 10), InvalidSellException);
+}
+
+TEST_F(AFinancialPortfolio, AnswersThePurchaseRecordForASinglePurchase)
+{
+    portfolio.purchase(SAMSUNG, 5);
+    auto purchases = portfolio.purchases(SAMSUNG);
+
+    auto purchase = purchases[0];
+    ASSERT_THAT(purchase.shareCount, Eq(5));
+    ASSERT_THAT(purchase.date, Eq(FinancialPortfolio::FIXED_PURCHASE_DATE));
 }

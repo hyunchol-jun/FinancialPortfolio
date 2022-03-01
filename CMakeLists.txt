@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(FinancialPortfolio)
 
+include_directories($ENV{HOMEBREW_CELLAR}/boost/1.78.0/include/)
+
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
 
@@ -14,10 +16,14 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(
-    FinancialPortfolioTest
+set(sources
     src/FinancialPortfolioTest.cpp
     src/FinancialPortfolio.cpp
+    )
+    
+add_executable(
+    FinancialPortfolioTest
+    ${sources}
     )
 
 target_link_libraries(
