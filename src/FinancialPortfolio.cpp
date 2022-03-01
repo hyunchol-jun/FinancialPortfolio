@@ -14,11 +14,12 @@ bool FinancialPortfolio::isEmpty() const
     return true;
 }
 
-void FinancialPortfolio::purchase(const std::string& ticker, int quantity)
+void FinancialPortfolio::purchase(
+    const std::string& ticker, int quantity, const date& transactionDate)
 {
     if (quantity <= 0) throw InvalidPurchaseException();
     m_holdings[ticker] += quantity;
-    m_purchases.push_back(PurchaseRecord(quantity, FIXED_PURCHASE_DATE));
+    m_purchases.push_back(PurchaseRecord(quantity, transactionDate));
 }
 
 std::vector<PurchaseRecord> 

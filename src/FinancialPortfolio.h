@@ -27,7 +27,10 @@ public:
     static const boost::gregorian::date FIXED_PURCHASE_DATE;
 
     bool isEmpty() const;
-    void purchase(const std::string& ticker, int quantity);
+    void purchase(const std::string& ticker, 
+                  int quantity,
+                  const boost::gregorian::date& transactionDate=
+                  FIXED_PURCHASE_DATE);
     void sell(const std::string& ticker, int quantity);
     int shareCount(const std::string& ticker);
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
