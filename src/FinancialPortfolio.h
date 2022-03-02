@@ -9,7 +9,7 @@ class ShareCountCannotBeZeroException: public std::exception
 {
 };
 
-class InvalidSellException: public std::exception
+class InsufficientSharesException: public std::exception
 {
 };
 
@@ -36,6 +36,10 @@ public:
                   FIXED_PURCHASE_DATE);
     void transact(const std::string& ticker, int shareChange,
                   const boost::gregorian::date& transactionDate);
+    void throwIfShareCountIsZero(int shareChange) const;
+    void updateShareChange(const std::string& ticker, int shareChange);
+    void addPurchaseRecord(int shareChange, 
+                           const boost::gregorian::date& date);
     int shareCount(const std::string& ticker);
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 

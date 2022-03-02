@@ -17,15 +17,13 @@ bool FinancialPortfolio::isEmpty() const
 void FinancialPortfolio::purchase(
     const std::string& ticker, int quantity, const date& transactionDate)
 {
-    int shareChange = quantity;
     transact(ticker, quantity, transactionDate);
 }
 
 void FinancialPortfolio::sell(
     const std::string& ticker, int quantity, const date& transactionDate)
 {
-    if (quantity > shareCount(ticker)) throw InvalidSellException();
-    int shareChange = -quantity;
+    if (quantity > shareCount(ticker)) throw InsufficientSharesException();
     transact(ticker, -quantity, transactionDate);
 }
 
@@ -33,9 +31,26 @@ void FinancialPortfolio::transact(const std::string& ticker,
                                   int shareChange,
                                   const date& transactionDate)
 {
+    throwIfShareCountIsZero(shareChange);
+    updateShareChange(ticker, shareChange);
+    addPurchaseRecord(shareChange, transactionDate);
+}
+
+void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
+{
     if (shareChange == 0) throw ShareCountCannotBeZeroException();
+}
+
+void FinancialPortfolio::updateShareChange(const std::string& ticker, 
+                                           int shareChange)
+{
     m_holdings[ticker] += shareChange;
-    m_purchases.push_back(PurchaseRecord(shareChange, transactionDate));
+}
+
+void FinancialPortfolio::addPurchaseRecord(int shareChange, 
+                                           const date& date)
+{
+    m_purchases.push_back(PurchaseRecord(shareChange, date));
 }
 
 std::vector<PurchaseRecord> 

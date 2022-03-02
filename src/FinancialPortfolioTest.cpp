@@ -107,7 +107,7 @@ TEST_F(AFinancialPortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
 {
     portfolio.purchase(IBM, 5);
     
-    ASSERT_THROW(portfolio.sell(IBM, 10), InvalidSellException);
+    ASSERT_THROW(portfolio.sell(IBM, 10), InsufficientSharesException);
 }
 
 TEST_F(AFinancialPortfolio, AnswersThePurchaseRecordForASinglePurchase)
