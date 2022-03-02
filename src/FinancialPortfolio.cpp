@@ -5,7 +5,7 @@ const date FinancialPortfolio::FIXED_PURCHASE_DATE(date(2014, Jan, 1));
 
 bool FinancialPortfolio::isEmpty() const
 {
-    return 0 == m_purchaseRecords.size();
+    return 0 == m_holdings.size();
 }
 
 void FinancialPortfolio::purchase(
@@ -45,32 +45,27 @@ void FinancialPortfolio::addPurchaseRecord(const std::string& ticker,
 
 bool FinancialPortfolio::containsTicker(const std::string& ticker) const
 {
-    return m_purchaseRecords.find(ticker) != m_purchaseRecords.end();
+    return m_holdings.find(ticker) != m_holdings.end();
 }
 
 void FinancialPortfolio::initializePurchaseRecords(const std::string& ticker)
 {
-    m_purchaseRecords[ticker] = std::vector<PurchaseRecord>();
+    m_holdings[ticker] = Holding();
 }
 
 void FinancialPortfolio::add(const std::string& ticker, PurchaseRecord&& record)
 {
-    m_purchaseRecords[ticker].push_back(record);
+    m_holdings[ticker].add(record);
 }
 
 std::vector<PurchaseRecord> 
         FinancialPortfolio::purchases(const std::string& ticker) const 
 {
-    return find<std::vector<PurchaseRecord>>(m_purchaseRecords, ticker);
+    return find<Holding>(m_holdings, ticker).purchases();
 }
 
 int FinancialPortfolio::shareCount(const std::string& ticker) const
 {
-    auto records = find<std::vector<PurchaseRecord>>(m_purchaseRecords, ticker);
-    return std::accumulate(records.begin(), records.end(), 0,
-            [] (int total, PurchaseRecord record)
-            {
-                return total + record.shareCount;
-            });
+    return find<Holding>(m_holdings, ticker).shareCount();
 }
 

@@ -1,7 +1,8 @@
 #ifndef FinancialPortfolio_h
 #define FinancialPortfolio_h
+#include "Holding.h"
+#include "PurchaseRecord.h"
 #include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -14,13 +15,6 @@ class InsufficientSharesException: public std::exception
 {
 };
 
-struct PurchaseRecord {
-    PurchaseRecord(int shareCount, 
-            const boost::gregorian::date& date): 
-        shareCount(shareCount), date(date) {}
-    int shareCount;
-    boost::gregorian::date date;
-};
 
 
 class FinancialPortfolio
@@ -57,8 +51,7 @@ private:
         return it == map.end() ?  T{} : it->second;
     }
 
-    std::unordered_map<std::string, std::vector<PurchaseRecord>>
-        m_purchaseRecords;
+    std::unordered_map<std::string, Holding> m_holdings;
 };
 
 #endif
