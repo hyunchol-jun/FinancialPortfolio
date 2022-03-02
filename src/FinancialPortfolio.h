@@ -21,6 +21,7 @@ struct PurchaseRecord {
     boost::gregorian::date date;
 };
 
+
 class FinancialPortfolio
 {
 public:
@@ -34,18 +35,30 @@ public:
     void sell(const std::string& ticker, int quantity,
                   const boost::gregorian::date& transactionDate=
                   FIXED_PURCHASE_DATE);
-    void transact(const std::string& ticker, int shareChange,
-                  const boost::gregorian::date& transactionDate);
-    void throwIfShareCountIsZero(int shareChange) const;
-    void updateShareChange(const std::string& ticker, int shareChange);
-    void addPurchaseRecord(int shareChange, 
-                           const boost::gregorian::date& date);
     int shareCount(const std::string& ticker);
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 
 private:
+    void transact(const std::string& ticker, int shareChange,
+                  const boost::gregorian::date& transactionDate);
+    void throwIfShareCountIsZero(int shareChange) const;
+    void updateShareChange(const std::string& ticker, int shareChange);
+    void addPurchaseRecord(const std::string& ticker,
+                           int shareChange, 
+                           const boost::gregorian::date& date);
+    bool containsTicker(const std::string& ticker) const;
+    void initializePurchaseRecords(const std::string& ticker);
+    void add(const std::string& ticker, PurchaseRecord&& record);
+    template<typename T> T 
+    find(std::unordered_map<std::string, T> map, const std::string& key) const
+    {
+        auto it = map.find(key);
+        return it == map.end() ?  T{} : it->second;
+    }
+
     std::unordered_map<std::string, int> m_holdings{};
-    std::vector<PurchaseRecord> m_purchases;
+    std::unordered_map<std::string, std::vector<PurchaseRecord>>
+        m_purchaseRecords;
 };
 
 #endif

@@ -129,3 +129,23 @@ TEST_F(AFinancialPortfolio, IncludesSalesInPurchaseRecords)
     ASSERT_PURCHASE(sales[1], -5, ArbitraryDate);
 }
 
+bool operator==(const PurchaseRecord& lhs, const PurchaseRecord& rhs)
+{
+    return lhs.shareCount == rhs.shareCount && lhs.date == rhs.date;
+}
+
+TEST_F(AFinancialPortfolio, SeparatesPurchaseRecordsByTicker)
+{
+    purchase(SAMSUNG, 5, ArbitraryDate);
+    purchase(IBM, 1, ArbitraryDate);
+
+    auto sales = portfolio.purchases(SAMSUNG);
+    ASSERT_THAT(sales, ElementsAre(PurchaseRecord(5, ArbitraryDate)));
+}
+
+TEST_F(AFinancialPortfolio, 
+        AnswersEmptyPurchaseRecordVectorWhenTickerNotFound)
+{
+    ASSERT_THAT(portfolio.purchases(SAMSUNG), 
+                        Eq(std::vector<PurchaseRecord>()));
+}

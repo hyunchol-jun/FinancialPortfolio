@@ -33,7 +33,7 @@ void FinancialPortfolio::transact(const std::string& ticker,
 {
     throwIfShareCountIsZero(shareChange);
     updateShareChange(ticker, shareChange);
-    addPurchaseRecord(shareChange, transactionDate);
+    addPurchaseRecord(ticker, shareChange, transactionDate);
 }
 
 void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
@@ -47,22 +47,38 @@ void FinancialPortfolio::updateShareChange(const std::string& ticker,
     m_holdings[ticker] += shareChange;
 }
 
-void FinancialPortfolio::addPurchaseRecord(int shareChange, 
+void FinancialPortfolio::addPurchaseRecord(const std::string& ticker,
+                                           int shareChange, 
                                            const date& date)
 {
-    m_purchases.push_back(PurchaseRecord(shareChange, date));
+    if (!containsTicker(ticker))
+        initializePurchaseRecords(ticker);
+    add(ticker, {shareChange, date});
+}
+
+bool FinancialPortfolio::containsTicker(const std::string& ticker) const
+{
+    return m_purchaseRecords.find(ticker) != m_purchaseRecords.end();
+}
+
+void FinancialPortfolio::initializePurchaseRecords(const std::string& ticker)
+{
+    m_purchaseRecords[ticker] = std::vector<PurchaseRecord>();
+}
+
+void FinancialPortfolio::add(const std::string& ticker, PurchaseRecord&& record)
+{
+    m_purchaseRecords[ticker].push_back(record);
 }
 
 std::vector<PurchaseRecord> 
         FinancialPortfolio::purchases(const std::string& ticker) const 
-    {
-        return m_purchases;
-    }
+{
+    return find<std::vector<PurchaseRecord>>(m_purchaseRecords, ticker);
+}
 
 int FinancialPortfolio::shareCount(const std::string& ticker)
 {
-    auto iter = m_holdings.find(ticker);
-    if (iter == m_holdings.end()) return 0;
-    return iter->second;
+    return find<int>(m_holdings, ticker);
 }
 
