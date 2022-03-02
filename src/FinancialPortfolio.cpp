@@ -5,13 +5,7 @@ const date FinancialPortfolio::FIXED_PURCHASE_DATE(date(2014, Jan, 1));
 
 bool FinancialPortfolio::isEmpty() const
 {
-    auto iter{m_holdings.begin()};
-    while (iter != m_holdings.end())
-    {
-        if (iter->second != 0) return false;
-        ++iter;
-    }
-    return true;
+    return 0 == m_purchaseRecords.size();
 }
 
 void FinancialPortfolio::purchase(
@@ -32,19 +26,12 @@ void FinancialPortfolio::transact(const std::string& ticker,
                                   const date& transactionDate)
 {
     throwIfShareCountIsZero(shareChange);
-    updateShareChange(ticker, shareChange);
     addPurchaseRecord(ticker, shareChange, transactionDate);
 }
 
 void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
 {
     if (shareChange == 0) throw ShareCountCannotBeZeroException();
-}
-
-void FinancialPortfolio::updateShareChange(const std::string& ticker, 
-                                           int shareChange)
-{
-    m_holdings[ticker] += shareChange;
 }
 
 void FinancialPortfolio::addPurchaseRecord(const std::string& ticker,
@@ -77,8 +64,13 @@ std::vector<PurchaseRecord>
     return find<std::vector<PurchaseRecord>>(m_purchaseRecords, ticker);
 }
 
-int FinancialPortfolio::shareCount(const std::string& ticker)
+int FinancialPortfolio::shareCount(const std::string& ticker) const
 {
-    return find<int>(m_holdings, ticker);
+    auto records = find<std::vector<PurchaseRecord>>(m_purchaseRecords, ticker);
+    return std::accumulate(records.begin(), records.end(), 0,
+            [] (int total, PurchaseRecord record)
+            {
+                return total + record.shareCount;
+            });
 }
 
