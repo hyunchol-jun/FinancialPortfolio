@@ -8,21 +8,23 @@ bool FinancialPortfolio::isEmpty() const
     return 0 == m_holdings.size();
 }
 
-void FinancialPortfolio::purchase(
-    const std::string& ticker, int quantity, const date& transactionDate)
+void FinancialPortfolio::purchase(const std::string& ticker, 
+                                  PurchaseRecord&& record)
 {
-    transact(ticker, {quantity, transactionDate});
+    transact(ticker, record);
 }
 
-void FinancialPortfolio::sell(
-    const std::string& ticker, int quantity, const date& transactionDate)
+void FinancialPortfolio::sell(const std::string& ticker, 
+                              PurchaseRecord&& record)
 {
-    if (quantity > shareCount(ticker)) throw InsufficientSharesException();
-    transact(ticker, {-quantity, transactionDate});
+    if (record.shareCount > shareCount(ticker)) 
+        throw InsufficientSharesException();
+    record.shareCount = -record.shareCount;
+    transact(ticker, record);
 }
 
 void FinancialPortfolio::transact(const std::string& ticker, 
-                                  PurchaseRecord&& record)
+                                  const PurchaseRecord& record)
 {
     throwIfShareCountIsZero(record.shareCount);
     addPurchaseRecord(ticker, record);

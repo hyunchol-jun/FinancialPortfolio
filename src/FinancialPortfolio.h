@@ -22,15 +22,14 @@ public:
 
     bool isEmpty() const;
     void purchase(const std::string& ticker, 
-                  int quantity,
-                  const boost::gregorian::date& transactionDate=TODAY);
-    void sell(const std::string& ticker, int quantity,
-                  const boost::gregorian::date& transactionDate=TODAY);
+                  PurchaseRecord&& record);
+    void sell(const std::string& ticker, 
+              PurchaseRecord&& record);
     int shareCount(const std::string& ticker) const;
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 
 private:
-    void transact(const std::string& ticker, PurchaseRecord&& record);
+    void transact(const std::string& ticker, const PurchaseRecord& record);
     void throwIfShareCountIsZero(int shareChange) const;
     void addPurchaseRecord(const std::string& ticker,
                            const PurchaseRecord& record);

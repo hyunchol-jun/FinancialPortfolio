@@ -16,28 +16,34 @@ protected:
     static const date ArbitraryDate;
     static const date TODAY;
 
-    void purchase(
-            const std::string& ticker,
-            int shareCount,
-            const date& 
-                transactionDate=AFinancialPortfolio::ArbitraryDate)
+    void purchase(const std::string& ticker,
+                  int shareCount,
+                  double purchasePrice=0.0,
+                  const date& 
+                        transactionDate=AFinancialPortfolio::ArbitraryDate)
     {
-        portfolio.purchase(ticker, shareCount, transactionDate);
+        portfolio.purchase(ticker, 
+                            {shareCount, purchasePrice, transactionDate});
     }
 
-    void sell(
-            const std::string& ticker,
-            int shareCount,
-            const date&
-                transactionDate=AFinancialPortfolio::ArbitraryDate)
+    void sell(const std::string& ticker,
+              int shareCount,
+              double salePrice=0.0,
+              const date&
+                        transactionDate=AFinancialPortfolio::ArbitraryDate)
+
     {
-        portfolio.sell(ticker, shareCount, transactionDate);
+        portfolio.sell(ticker,
+                            {shareCount, salePrice, transactionDate});
     }
 
-    void ASSERT_PURCHASE(
-            PurchaseRecord& purchase, int shareCount, const date& date)
+    void ASSERT_PURCHASE(PurchaseRecord& purchase, 
+                         int shareCount, 
+                         double purchasePrice,
+                         const date& date)
     {
         ASSERT_THAT(purchase.shareCount, Eq(shareCount));
+        ASSERT_THAT(purchase.priceOnTransaction, DoubleEq(purchasePrice));
         ASSERT_THAT(purchase.date, Eq(date));
     }
 };
@@ -54,7 +60,7 @@ TEST_F(AFinancialPortfolio, IsEmptyWhenCreated)
 
 TEST_F(AFinancialPortfolio, IsNotEmptyAfterPurchase)
 {
-    portfolio.purchase(IBM, 1);
+    purchase(IBM, 1);
 
     ASSERT_FALSE(portfolio.isEmpty());
 }
@@ -66,24 +72,24 @@ TEST_F(AFinancialPortfolio, AnswersZeroForShareCountOfUnpurchasedSymbol)
 
 TEST_F(AFinancialPortfolio, AnswersShareCountForPurchasedSymbol)
 {
-    portfolio.purchase(IBM, 2);
+    purchase(IBM, 2);
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(2));
 }
 
 TEST_F(AFinancialPortfolio, ThrowsOnPurchaseOfZeroShares)
 {
-    ASSERT_THROW(portfolio.purchase(IBM, 0), ShareCountCannotBeZeroException);
+    ASSERT_THROW(purchase(IBM, 0), ShareCountCannotBeZeroException);
 }
 
 TEST_F(AFinancialPortfolio, ThrowsOnSellOfZeroShares)
 {
-    ASSERT_THROW(portfolio.sell(IBM, 0), ShareCountCannotBeZeroException);
+    ASSERT_THROW(sell(IBM, 0), ShareCountCannotBeZeroException);
 }
 
 TEST_F(AFinancialPortfolio, AnswersShareCountForAppropriateSymbol)
 {
-    portfolio.purchase(IBM, 10);
-    portfolio.purchase(SAMSUNG, 5);
+    purchase(IBM, 10);
+    purchase(SAMSUNG, 5);
     
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(10));
 }
@@ -91,8 +97,8 @@ TEST_F(AFinancialPortfolio, AnswersShareCountForAppropriateSymbol)
 TEST_F(AFinancialPortfolio, 
         ShareCountReflectsAccumulatedPurchasesOfSameSymbol)
 {
-    portfolio.purchase(IBM, 5);
-    portfolio.purchase(IBM, 3);
+    purchase(IBM, 5);
+    purchase(IBM, 3);
 
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(8));
 }
@@ -100,35 +106,35 @@ TEST_F(AFinancialPortfolio,
 TEST_F(AFinancialPortfolio, ReducesShareCountOfSymbolOnSell)
 {
     purchase(IBM, 5);
-    portfolio.sell(IBM, 3);
+    sell(IBM, 3);
 
     ASSERT_THAT(portfolio.shareCount(IBM), Eq(2));
 }
 
 TEST_F(AFinancialPortfolio, ThrowsWhenSellingMoreSharesThanPurchased)
 {
-    portfolio.purchase(IBM, 5);
+    purchase(IBM, 5);
     
-    ASSERT_THROW(portfolio.sell(IBM, 10), InsufficientSharesException);
+    ASSERT_THROW(sell(IBM, 10), InsufficientSharesException);
 }
 
 TEST_F(AFinancialPortfolio, AnswersThePurchaseRecordForASinglePurchase)
 {
-    purchase(SAMSUNG, 5, ArbitraryDate);
+    purchase(SAMSUNG, 5, 100.00, ArbitraryDate);
 
     auto purchases = portfolio.purchases(SAMSUNG);
 
-    ASSERT_PURCHASE(purchases[0], 5, ArbitraryDate);
+    ASSERT_PURCHASE(purchases[0], 5, 100.00, ArbitraryDate);
 }
 
 TEST_F(AFinancialPortfolio, IncludesSalesInPurchaseRecords)
 {
     purchase(SAMSUNG, 10);
-    sell(SAMSUNG, 5, ArbitraryDate);
+    sell(SAMSUNG, 5, 100.00, ArbitraryDate);
     
     auto sales = portfolio.purchases(SAMSUNG);
 
-    ASSERT_PURCHASE(sales[1], -5, ArbitraryDate);
+    ASSERT_PURCHASE(sales[1], -5, 100.00, ArbitraryDate);
 }
 
 bool operator==(const PurchaseRecord& lhs, const PurchaseRecord& rhs)
@@ -138,11 +144,11 @@ bool operator==(const PurchaseRecord& lhs, const PurchaseRecord& rhs)
 
 TEST_F(AFinancialPortfolio, SeparatesPurchaseRecordsByTicker)
 {
-    purchase(SAMSUNG, 5, ArbitraryDate);
-    purchase(IBM, 1, ArbitraryDate);
+    purchase(SAMSUNG, 5);
+    purchase(IBM, 1);
 
     auto sales = portfolio.purchases(SAMSUNG);
-    ASSERT_THAT(sales, ElementsAre(PurchaseRecord(5, ArbitraryDate)));
+    ASSERT_THAT(sales, ElementsAre(PurchaseRecord(5, 0.0, ArbitraryDate)));
 }
 
 TEST_F(AFinancialPortfolio, 
@@ -160,8 +166,16 @@ bool isSameDay(const date& lhs, const date& rhs)
 
 TEST_F(AFinancialPortfolio, HasTodayAsTransactionDateWhenNotSpecified)
 {
-    portfolio.purchase(SAMSUNG, 10);
+    portfolio.purchase(SAMSUNG, {10, 100.0});
     auto purchases = portfolio.purchases(SAMSUNG);
 
     ASSERT_THAT(purchases[0].date, Eq(TODAY));
+}
+
+TEST_F(AFinancialPortfolio, AnswersPriceOfSharesOnTransaction)
+{
+    purchase(IBM, 5, 100.0, ArbitraryDate);
+    auto purchases = portfolio.purchases(IBM);
+
+    ASSERT_THAT(purchases[0].priceOnTransaction, DoubleEq(100.00));
 }

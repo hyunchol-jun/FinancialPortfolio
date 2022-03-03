@@ -21,7 +21,7 @@ TEST_F(AHolding, ContainsZeroSharesWhenCreated)
 
 TEST_F(AHolding, AnswersShareCountsAfterAdding)
 {
-    PurchaseRecord record{5, ArbitraryDate};
+    PurchaseRecord record{5, 100.0, ArbitraryDate};
     holding.add(record);
 
     ASSERT_THAT(holding.shareCount(), Eq(5));
@@ -29,7 +29,8 @@ TEST_F(AHolding, AnswersShareCountsAfterAdding)
 
 TEST_F(AHolding, AnswersShareCountsAfterMultipleAdding)
 {
-    PurchaseRecord record1{5, ArbitraryDate}, record2{10, ArbitraryDate};
+    PurchaseRecord record1{5, 100.0, ArbitraryDate};
+    PurchaseRecord record2{10, 200.0, ArbitraryDate};
     holding.add(record1);
     holding.add(record2);
 
