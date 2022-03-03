@@ -18,16 +18,14 @@ class InsufficientSharesException: public std::exception
 class FinancialPortfolio
 {
 public:
-    static const boost::gregorian::date FIXED_PURCHASE_DATE;
+    static boost::gregorian::date TODAY;
 
     bool isEmpty() const;
     void purchase(const std::string& ticker, 
                   int quantity,
-                  const boost::gregorian::date& transactionDate=
-                  FIXED_PURCHASE_DATE);
+                  const boost::gregorian::date& transactionDate=TODAY);
     void sell(const std::string& ticker, int quantity,
-                  const boost::gregorian::date& transactionDate=
-                  FIXED_PURCHASE_DATE);
+                  const boost::gregorian::date& transactionDate=TODAY);
     int shareCount(const std::string& ticker) const;
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 

@@ -1,7 +1,7 @@
 #include "FinancialPortfolio.h"
 using namespace boost::gregorian;
 
-const date FinancialPortfolio::FIXED_PURCHASE_DATE(date(2014, Jan, 1));
+date FinancialPortfolio::TODAY(boost::gregorian::day_clock::local_day());
 
 bool FinancialPortfolio::isEmpty() const
 {

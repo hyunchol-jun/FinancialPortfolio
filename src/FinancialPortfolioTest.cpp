@@ -14,6 +14,7 @@ protected:
     static const std::string SAMSUNG;
     FinancialPortfolio portfolio;
     static const date ArbitraryDate;
+    static const date TODAY;
 
     void purchase(
             const std::string& ticker,
@@ -42,6 +43,7 @@ protected:
 };
 
 const date AFinancialPortfolio::ArbitraryDate(2014, Sep, 5);
+const date AFinancialPortfolio::TODAY(day_clock::local_day());
 const std::string AFinancialPortfolio::IBM{"IBM"};
 const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
 
@@ -148,4 +150,18 @@ TEST_F(AFinancialPortfolio,
 {
     ASSERT_THAT(portfolio.purchases(SAMSUNG), 
                         Eq(std::vector<PurchaseRecord>()));
+}
+
+bool isSameDay(const date& lhs, const date& rhs)
+{
+    return lhs.year() == rhs.year() && lhs.month() == rhs.month()
+            && lhs.day() == rhs.day();
+}
+
+TEST_F(AFinancialPortfolio, HasTodayAsTransactionDateWhenNotSpecified)
+{
+    portfolio.purchase(SAMSUNG, 10);
+    auto purchases = portfolio.purchases(SAMSUNG);
+
+    ASSERT_THAT(purchases[0].date, Eq(TODAY));
 }
