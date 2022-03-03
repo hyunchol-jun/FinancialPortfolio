@@ -11,22 +11,21 @@ bool FinancialPortfolio::isEmpty() const
 void FinancialPortfolio::purchase(
     const std::string& ticker, int quantity, const date& transactionDate)
 {
-    transact(ticker, quantity, transactionDate);
+    transact(ticker, {quantity, transactionDate});
 }
 
 void FinancialPortfolio::sell(
     const std::string& ticker, int quantity, const date& transactionDate)
 {
     if (quantity > shareCount(ticker)) throw InsufficientSharesException();
-    transact(ticker, -quantity, transactionDate);
+    transact(ticker, {-quantity, transactionDate});
 }
 
 void FinancialPortfolio::transact(const std::string& ticker, 
-                                  int shareChange,
-                                  const date& transactionDate)
+                                  PurchaseRecord&& record)
 {
-    throwIfShareCountIsZero(shareChange);
-    addPurchaseRecord(ticker, shareChange, transactionDate);
+    throwIfShareCountIsZero(record.shareCount);
+    addPurchaseRecord(ticker, record);
 }
 
 void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
@@ -35,12 +34,11 @@ void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
 }
 
 void FinancialPortfolio::addPurchaseRecord(const std::string& ticker,
-                                           int shareChange, 
-                                           const date& date)
+                                           const PurchaseRecord& record)
 {
     if (!containsTicker(ticker))
         initializePurchaseRecords(ticker);
-    add(ticker, {shareChange, date});
+    add(ticker, record);
 }
 
 bool FinancialPortfolio::containsTicker(const std::string& ticker) const
@@ -53,7 +51,8 @@ void FinancialPortfolio::initializePurchaseRecords(const std::string& ticker)
     m_holdings[ticker] = Holding();
 }
 
-void FinancialPortfolio::add(const std::string& ticker, PurchaseRecord&& record)
+void FinancialPortfolio::add(const std::string& ticker, 
+                             const PurchaseRecord& record)
 {
     m_holdings[ticker].add(record);
 }

@@ -7,7 +7,7 @@
 class Holding
 {
 public:
-    void add(PurchaseRecord& record)
+    void add(const PurchaseRecord& record)
     {
         m_purchaseRecords.push_back(record);
     }

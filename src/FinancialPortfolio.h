@@ -15,8 +15,6 @@ class InsufficientSharesException: public std::exception
 {
 };
 
-
-
 class FinancialPortfolio
 {
 public:
@@ -34,15 +32,13 @@ public:
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 
 private:
-    void transact(const std::string& ticker, int shareChange,
-                  const boost::gregorian::date& transactionDate);
+    void transact(const std::string& ticker, PurchaseRecord&& record);
     void throwIfShareCountIsZero(int shareChange) const;
     void addPurchaseRecord(const std::string& ticker,
-                           int shareChange, 
-                           const boost::gregorian::date& date);
+                           const PurchaseRecord& record);
     bool containsTicker(const std::string& ticker) const;
     void initializePurchaseRecords(const std::string& ticker);
-    void add(const std::string& ticker, PurchaseRecord&& record);
+    void add(const std::string& ticker, const PurchaseRecord& record);
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const
