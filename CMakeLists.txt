@@ -19,6 +19,7 @@ enable_testing()
 set(sources
     src/FinancialPortfolioTest.cpp
     src/FinancialPortfolio.cpp
+    src/HoldingTest.cpp
     )
     
 add_executable(
