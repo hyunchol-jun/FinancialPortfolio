@@ -1,11 +1,23 @@
 #include "FinancialPortfolio.h"
+#include "Http.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <iostream>
+#include <memory>
 
 using namespace ::testing;
 using namespace boost::gregorian;
+
+class HttpStub: public Http
+{
+public:
+    void initialize() override {}
+    std::string get(const std::string& url) const override {
+        return "100.0";
+    }
+private: 
+};
 
 class AFinancialPortfolio: public Test
 {
@@ -160,11 +172,12 @@ TEST_F(AFinancialPortfolio,
 
 bool isSameDay(const date& lhs, const date& rhs)
 {
-    return lhs.year() == rhs.year() && lhs.month() == rhs.month()
-            && lhs.day() == rhs.day();
+    return lhs.year() == rhs.year() && 
+           lhs.month() == rhs.month() && 
+           lhs.day() == rhs.day();
 }
 
-TEST_F(AFinancialPortfolio, HasTodayAsTransactionDateWhenNotSpecified)
+TEST_F(AFinancialPortfolio, AnswersTodayForTransactionDateWhenNotSpecified)
 {
     portfolio.purchase(SAMSUNG, {10, 100.0});
     auto purchases = portfolio.purchases(SAMSUNG);
@@ -184,7 +197,18 @@ TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
 {
     purchase(IBM, 5, 100.0, ArbitraryDate);
     purchase(IBM, 10, 200.0, ArbitraryDate);
+    sell(IBM, 3, 150.0, ArbitraryDate);
 
     ASSERT_THAT(portfolio.averagePurchasePrice(IBM), 
-                DoubleEq((100.0*5 + 200.0*10)/15));
+                DoubleEq((100.0*5 + 200.0*10 - 150.0*3)/(5 + 10 - 3)));
 }
+
+TEST_F(AFinancialPortfolio, AnswersCurrentPriceForTicker)
+{
+    HttpStub httpStub;
+    portfolio.setHttp(std::make_shared<HttpStub>(httpStub));
+    double price = portfolio.currentPriceOfShare(IBM);
+
+    ASSERT_THAT(price, DoubleEq(100.00));
+}
+

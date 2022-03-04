@@ -20,6 +20,7 @@ set(sources
     src/FinancialPortfolioTest.cpp
     src/FinancialPortfolio.cpp
     src/HoldingTest.cpp
+    src/Holding.cpp
     )
     
 add_executable(

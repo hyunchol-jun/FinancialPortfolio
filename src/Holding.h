@@ -7,42 +7,13 @@
 class Holding
 {
 public:
-    void add(const PurchaseRecord& record)
-    {
-        m_purchaseRecords.push_back(record);
-    }
-
-    std::vector<PurchaseRecord> purchases() const
-    {
-        return m_purchaseRecords;
-    }
-
-    int shareCount() const
-    {
-        return std::accumulate(m_purchaseRecords.begin(), 
-                               m_purchaseRecords.end(), 
-                               0,
-            [] (int total, PurchaseRecord record)
-            {
-                return total + record.shareCount;
-            });
-    }
-
-    double averagePurchasePrice() const
-    {
-        double total = std::accumulate(m_purchaseRecords.begin(),
-                                       m_purchaseRecords.end(),
-                                       0,
-                               [](double total, PurchaseRecord record)
-                               {
-                                    return total 
-                                            + (record.priceOnTransaction
-                                            * record.shareCount);
-                               });
-        return total / shareCount();
-    }
+    void add(const PurchaseRecord& record);
+    std::vector<PurchaseRecord> purchases() const;
+    int shareCount() const;
+    double averagePurchasePrice() const;
 
 private:
     std::vector<PurchaseRecord> m_purchaseRecords;
+    double totalValue() const;
 };
 #endif

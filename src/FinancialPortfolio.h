@@ -1,9 +1,12 @@
 #ifndef FinancialPortfolio_h
 #define FinancialPortfolio_h
+#include "Http.h"
 #include "Holding.h"
 #include "PurchaseRecord.h"
+#include <memory>
 #include <numeric>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -26,6 +29,8 @@ public:
     int shareCount(const std::string& ticker) const;
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
     double averagePurchasePrice(const std::string& ticker) const;
+    double currentPriceOfShare(const std::string& ticker) const;
+    void setHttp(std::shared_ptr<Http> http);
 
 private:
     void throwIfNotEnoughSharesToSell(const std::string& ticker,
@@ -47,6 +52,7 @@ private:
     }
 
     std::unordered_map<std::string, Holding> m_holdings;
+    std::shared_ptr<Http> m_http;
 };
 
 #endif
