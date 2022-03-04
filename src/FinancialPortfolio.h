@@ -30,7 +30,7 @@ public:
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
     double averagePurchasePrice(const std::string& ticker) const;
     double currentPriceOfShare(const std::string& ticker) const;
-    void setHttp(std::shared_ptr<Http> http);
+    void setHttp(const std::shared_ptr<Http>& http);
 
 private:
     void throwIfNotEnoughSharesToSell(const std::string& ticker,
@@ -43,6 +43,7 @@ private:
     bool containsTicker(const std::string& ticker) const;
     void initializePurchaseRecords(const std::string& ticker);
     void add(const std::string& ticker, const PurchaseRecord& record);
+    double convertedDoubleFromString(const std::string& string) const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const

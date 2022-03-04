@@ -207,6 +207,7 @@ TEST_F(AFinancialPortfolio, AnswersCurrentPriceForTicker)
 {
     HttpStub httpStub;
     portfolio.setHttp(std::make_shared<HttpStub>(httpStub));
+
     double price = portfolio.currentPriceOfShare(IBM);
 
     ASSERT_THAT(price, DoubleEq(100.00));
