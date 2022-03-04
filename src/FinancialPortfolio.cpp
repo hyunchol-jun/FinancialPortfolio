@@ -17,10 +17,22 @@ void FinancialPortfolio::purchase(const std::string& ticker,
 void FinancialPortfolio::sell(const std::string& ticker, 
                               PurchaseRecord&& record)
 {
+    throwIfNotEnoughSharesToSell(ticker, record);
+    negateShareCountForSale(record);
+    transact(ticker, record);
+}
+
+void FinancialPortfolio::throwIfNotEnoughSharesToSell(
+                                                const std::string& ticker,
+                                                const PurchaseRecord& record)
+{
     if (record.shareCount > shareCount(ticker)) 
         throw InsufficientSharesException();
+}
+
+void FinancialPortfolio::negateShareCountForSale(PurchaseRecord& record)
+{
     record.shareCount = -record.shareCount;
-    transact(ticker, record);
 }
 
 void FinancialPortfolio::transact(const std::string& ticker, 

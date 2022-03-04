@@ -29,6 +29,9 @@ public:
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
 
 private:
+    void throwIfNotEnoughSharesToSell(const std::string& ticker,
+                                      const PurchaseRecord& record);
+    void negateShareCountForSale(PurchaseRecord& record);
     void transact(const std::string& ticker, const PurchaseRecord& record);
     void throwIfShareCountIsZero(int shareChange) const;
     void addPurchaseRecord(const std::string& ticker,
