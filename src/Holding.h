@@ -20,12 +20,28 @@ public:
     int shareCount() const
     {
         return std::accumulate(m_purchaseRecords.begin(), 
-                               m_purchaseRecords.end(), 0,
+                               m_purchaseRecords.end(), 
+                               0,
             [] (int total, PurchaseRecord record)
             {
                 return total + record.shareCount;
             });
     }
+
+    double averagePurchasePrice() const
+    {
+        double total = std::accumulate(m_purchaseRecords.begin(),
+                                       m_purchaseRecords.end(),
+                                       0,
+                               [](double total, PurchaseRecord record)
+                               {
+                                    return total 
+                                            + (record.priceOnTransaction
+                                            * record.shareCount);
+                               });
+        return total / shareCount();
+    }
+
 private:
     std::vector<PurchaseRecord> m_purchaseRecords;
 };

@@ -1,7 +1,4 @@
 #include "FinancialPortfolio.h"
-using namespace boost::gregorian;
-
-date FinancialPortfolio::TODAY(boost::gregorian::day_clock::local_day());
 
 bool FinancialPortfolio::isEmpty() const
 {
@@ -82,3 +79,7 @@ int FinancialPortfolio::shareCount(const std::string& ticker) const
     return find<Holding>(m_holdings, ticker).shareCount();
 }
 
+double FinancialPortfolio::averagePurchasePrice(const std::string& ticker) const
+{
+    return find<Holding>(m_holdings, ticker).averagePurchasePrice();
+}

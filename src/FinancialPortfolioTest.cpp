@@ -179,3 +179,12 @@ TEST_F(AFinancialPortfolio, AnswersPriceOfSharesOnTransaction)
 
     ASSERT_THAT(purchases[0].priceOnTransaction, DoubleEq(100.00));
 }
+
+TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
+{
+    purchase(IBM, 5, 100.0, ArbitraryDate);
+    purchase(IBM, 10, 200.0, ArbitraryDate);
+
+    ASSERT_THAT(portfolio.averagePurchasePrice(IBM), 
+                DoubleEq((100.0*5 + 200.0*10)/15));
+}

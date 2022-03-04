@@ -2,7 +2,7 @@
 #define FinancialPortfolio_h
 #include "Holding.h"
 #include "PurchaseRecord.h"
-#include <boost/date_time/gregorian/gregorian_types.hpp>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -18,8 +18,6 @@ class InsufficientSharesException: public std::exception
 class FinancialPortfolio
 {
 public:
-    static boost::gregorian::date TODAY;
-
     bool isEmpty() const;
     void purchase(const std::string& ticker, 
                   PurchaseRecord&& record);
@@ -27,6 +25,7 @@ public:
               PurchaseRecord&& record);
     int shareCount(const std::string& ticker) const;
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
+    double averagePurchasePrice(const std::string& ticker) const;
 
 private:
     void throwIfNotEnoughSharesToSell(const std::string& ticker,
