@@ -86,15 +86,16 @@ double FinancialPortfolio::averagePurchasePrice(const std::string& ticker) const
 
 double FinancialPortfolio::currentPriceOfShare(const std::string& ticker) const
 {
-    return convertedDoubleFromString(m_http->get("url"));
+    std::string response{m_http->get(ticker)};
+    nlohmann::json json = nlohmann::json::parse(response);
+    return (double)json["chart"]["result"][0]["meta"]["regularMarketPrice"];
 }
 
 double FinancialPortfolio::convertedDoubleFromString(const std::string& string)
     const
 {
-    std::istringstream istream(string);
     double result{};
-    return (istream >> result) ? result : 0.0;
+    return successfullyConvertedFromString(string, result) ? result : 0.0;
 }
 
 void FinancialPortfolio::setHttp(const std::shared_ptr<Http>& http)

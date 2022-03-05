@@ -9,18 +9,12 @@
 using namespace ::testing;
 using namespace boost::gregorian;
 
-class HttpStub: public Http
-{
-public:
-    void initialize() override {}
-    std::string get(const std::string& url) const override {
-        return "100.0";
-    }
-private: 
-};
 
 class AFinancialPortfolio: public Test
 {
+public:
+    static const std::string IBM_JSON_RESPONSE;
+
 protected:
     static const std::string IBM;
     static const std::string SAMSUNG;
@@ -64,6 +58,19 @@ const date AFinancialPortfolio::ArbitraryDate(2014, Sep, 5);
 const date AFinancialPortfolio::TODAY(day_clock::local_day());
 const std::string AFinancialPortfolio::IBM{"IBM"};
 const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
+const std::string AFinancialPortfolio::IBM_JSON_RESPONSE{
+    R"delim({"chart":{"result":[{"meta":{"currency":"USD","symbol":"IBM","exchangeName":"NYQ","instrumentType":"EQUITY","firstTradeDate":-252322200,"regularMarketTime":1646427602,"gmtoffset":-18000,"timezone":"EST","exchangeTimezoneName":"America/New_York","regularMarketPrice":126.62,"chartPreviousClose":125.93,"priceHint":2,"currentTradingPeriod":{"pre":{"timezone":"EST","end":1646404200,"start":1646384400,"gmtoffset":-18000},"regular":{"timezone":"EST","end":1646427600,"start":1646404200,"gmtoffset":-18000},"post":{"timezone":"EST","end":1646442000,"start":1646427600,"gmtoffset":-18000}},"dataGranularity":"1d","range":"","validRanges":["1d","5d","1mo","3mo","6mo","1y","2y","5y","10y","ytd","max"]},"timestamp":[1646427602],"indicators":{"quote":[{"open":[124.4000015258789],"low":[124.21029663085938],"volume":[4301826],"high":[127.3499984741211],"close":[126.62000274658203]}],"adjclose":[{"adjclose":[126.62000274658203]}]}}],"error":null}})delim"
+};
+
+class HttpStub: public Http
+{
+public:
+    void initialize() override {}
+    std::string get(const std::string& url) const override {
+        return AFinancialPortfolio::IBM_JSON_RESPONSE;
+    }
+private: 
+};
 
 TEST_F(AFinancialPortfolio, IsEmptyWhenCreated)
 {
@@ -210,6 +217,6 @@ TEST_F(AFinancialPortfolio, AnswersCurrentPriceForTicker)
 
     double price = portfolio.currentPriceOfShare(IBM);
 
-    ASSERT_THAT(price, DoubleEq(100.00));
+    ASSERT_THAT(price, DoubleEq(126.62));
 }
 

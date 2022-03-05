@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(FinancialPortfolio)
 
-include_directories($ENV{HOMEBREW_CELLAR}/boost/1.78.0/include/)
+include_directories($ENV{HOMEBREW_CELLAR}/boost/1.78.0/include/ $ENV{HOMEBREW_CELLAR}/nlohmann-json/3.10.4/include)
 
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)

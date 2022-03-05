@@ -3,6 +3,7 @@
 #include "Http.h"
 #include "Holding.h"
 #include "PurchaseRecord.h"
+#include <nlohmann/json.hpp>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -44,6 +45,13 @@ private:
     void initializePurchaseRecords(const std::string& ticker);
     void add(const std::string& ticker, const PurchaseRecord& record);
     double convertedDoubleFromString(const std::string& string) const;
+    template<typename T>
+    bool successfullyConvertedFromString(const std::string& fromString, 
+                                         T& toValue) const
+    {
+        std::istringstream istream(fromString);
+        return !(istream >> toValue).fail();
+    }
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const
