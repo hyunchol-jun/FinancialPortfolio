@@ -86,16 +86,24 @@ double FinancialPortfolio::averagePurchasePrice(const std::string& ticker) const
 
 double FinancialPortfolio::currentPriceOfShare(const std::string& ticker) const
 {
-    std::string response{m_http->get(ticker)};
-    JsonParser priceExtracter(response);
-    return priceExtracter.currentPrice();
+    std::string response{yahooFinanceResponse(ticker)};
+    return JsonParser{response}.currentPrice();
 }
 
-double FinancialPortfolio::convertedDoubleFromString(const std::string& string)
+std::string FinancialPortfolio::yahooFinanceResponse(const std::string& ticker)
     const
 {
-    double result{};
-    return successfullyConvertedFromString(string, result) ? result : 0.0;
+    return m_http->get(yahooFinanceRequestUrl(ticker, "201646451256"));
+}
+
+std::string FinancialPortfolio::yahooFinanceRequestUrl(
+                                    const std::string& ticker,
+                                    const std::string& Timestamp) const
+{
+    std::string server{"https://query1.finance.yahoo.com/"};
+    std::string document{"v8/finance/chart/"};
+    return server + document + ticker + "?period1=%" + Timestamp
+           + "&period2=" + Timestamp + "&interval=1d&events=history";
 }
 
 void FinancialPortfolio::setHttp(const std::shared_ptr<Http>& http)

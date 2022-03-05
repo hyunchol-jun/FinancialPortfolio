@@ -44,14 +44,9 @@ private:
     bool containsTicker(const std::string& ticker) const;
     void initializePurchaseRecords(const std::string& ticker);
     void add(const std::string& ticker, const PurchaseRecord& record);
-    double convertedDoubleFromString(const std::string& string) const;
-    template<typename T>
-    bool successfullyConvertedFromString(const std::string& fromString, 
-                                         T& toValue) const
-    {
-        std::istringstream istream(fromString);
-        return !(istream >> toValue).fail();
-    }
+    std::string yahooFinanceResponse(const std::string& ticker) const;
+    std::string yahooFinanceRequestUrl(const std::string& ticker,
+                                 const std::string& Timestamp) const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const
