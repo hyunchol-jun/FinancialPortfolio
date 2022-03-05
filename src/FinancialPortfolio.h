@@ -2,8 +2,8 @@
 #define FinancialPortfolio_h
 #include "Http.h"
 #include "Holding.h"
+#include "JsonParser.h"
 #include "PurchaseRecord.h"
-#include <nlohmann/json.hpp>
 #include <memory>
 #include <numeric>
 #include <string>

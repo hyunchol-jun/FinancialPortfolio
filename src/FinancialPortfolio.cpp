@@ -87,8 +87,8 @@ double FinancialPortfolio::averagePurchasePrice(const std::string& ticker) const
 double FinancialPortfolio::currentPriceOfShare(const std::string& ticker) const
 {
     std::string response{m_http->get(ticker)};
-    nlohmann::json json = nlohmann::json::parse(response);
-    return (double)json["chart"]["result"][0]["meta"]["regularMarketPrice"];
+    JsonParser priceExtracter(response);
+    return priceExtracter.currentPrice();
 }
 
 double FinancialPortfolio::convertedDoubleFromString(const std::string& string)
