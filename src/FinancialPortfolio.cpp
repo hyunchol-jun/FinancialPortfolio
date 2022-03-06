@@ -104,6 +104,7 @@ double FinancialPortfolio::parsedCurrentPriceFromJson(
 std::string FinancialPortfolio::yahooFinanceResponse(const std::string& ticker)
     const
 {
+    m_http->initialize();
     return m_http->get(yahooFinanceRequestUrl(ticker, "201646451256"));
 }
 

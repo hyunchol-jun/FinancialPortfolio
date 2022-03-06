@@ -8,14 +8,14 @@ class JsonParser
 {
 public:
     JsonParser(const std::string& jsonString) 
-            : m_jsonData{json::parse(jsonString)}
-    {
-    }
+            : m_jsonData{json::parse(jsonString)} {}
+
     double currentPrice() 
     {
         return static_cast<double>(
                m_jsonData["chart"]["result"][0]["meta"]["regularMarketPrice"]); 
     }
+
 private:
     json m_jsonData{};
 };

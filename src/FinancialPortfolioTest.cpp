@@ -211,6 +211,7 @@ TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
 
 TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
 {
+    InSequence forceExpectationOrder;
     std::unique_ptr<HttpStub> ptr{new HttpStub};
     
     std::string urlStart{
@@ -221,6 +222,7 @@ TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
                         + "&interval=" + AFinancialPortfolio::ValidInterval
                         + "&events=history";
 
+    EXPECT_CALL(*ptr, initialize());
     EXPECT_CALL(*ptr, get(expectedUrl));
     
     portfolio.setHttp(std::move(ptr));
@@ -229,7 +231,7 @@ TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
 
 TEST_F(AFinancialPortfolio, ExtractsCurrentPriceFromRetrievedJson)
 {
-    std::unique_ptr<HttpStub> ptr{new HttpStub};
+    std::unique_ptr<NiceMock<HttpStub>> ptr{new NiceMock<HttpStub>};
 
     EXPECT_CALL(*ptr, get(_)).WillOnce(Return(
     R"delim({"chart":{"result":[{"meta":{"currency":"USD","symbol":"IBM","exchangeName":"NYQ","instrumentType":"EQUITY","firstTradeDate":-252322200,"regularMarketTime":1646427602,"gmtoffset":-18000,"timezone":"EST","exchangeTimezoneName":"America/New_York","regularMarketPrice":126.62,"chartPreviousClose":125.93,"priceHint":2,"currentTradingPeriod":{"pre":{"timezone":"EST","end":1646404200,"start":1646384400,"gmtoffset":-18000},"regular":{"timezone":"EST","end":1646427600,"start":1646404200,"gmtoffset":-18000},"post":{"timezone":"EST","end":1646442000,"start":1646427600,"gmtoffset":-18000}},"dataGranularity":"1d","range":"","validRanges":["1d","5d","1mo","3mo","6mo","1y","2y","5y","10y","ytd","max"]},"timestamp":[1646427602],"indicators":{"quote":[{"open":[124.4000015258789],"low":[124.21029663085938],"volume":[4301826],"high":[127.3499984741211],"close":[126.62000274658203]}],"adjclose":[{"adjclose":[126.62000274658203]}]}}],"error":null}})delim"));
@@ -237,4 +239,13 @@ TEST_F(AFinancialPortfolio, ExtractsCurrentPriceFromRetrievedJson)
     portfolio.setHttp(std::move(ptr));
     double price = portfolio.currentPriceOfShare(IBM);
     ASSERT_THAT(price, DoubleEq(126.62));
+}
+
+TEST_F(AFinancialPortfolio, ReturnsZeroWhenPriceRetrievingFailed)
+{
+    std::unique_ptr<NiceMock<HttpStub>> ptr{new NiceMock<HttpStub>};
+    portfolio.setHttp(std::move(ptr));
+
+    double price = portfolio.currentPriceOfShare("");
+    ASSERT_THAT(price, DoubleEq(0.0)); 
 }
