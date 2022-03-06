@@ -31,7 +31,7 @@ public:
     std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
     double averagePurchasePrice(const std::string& ticker) const;
     double currentPriceOfShare(const std::string& ticker) const;
-    void setHttp(const std::shared_ptr<Http>& http);
+    void setHttp(std::unique_ptr<Http> http);
 
 private:
     void throwIfNotEnoughSharesToSell(const std::string& ticker,
@@ -47,6 +47,7 @@ private:
     std::string yahooFinanceResponse(const std::string& ticker) const;
     std::string yahooFinanceRequestUrl(const std::string& ticker,
                                  const std::string& Timestamp) const;
+    double parsedCurrentPriceFromJson(const std::string& response) const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const
@@ -56,7 +57,7 @@ private:
     }
 
     std::unordered_map<std::string, Holding> m_holdings;
-    std::shared_ptr<Http> m_http;
+    std::unique_ptr<Http> m_http;
 };
 
 #endif

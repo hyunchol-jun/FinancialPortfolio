@@ -67,19 +67,8 @@ const std::string AFinancialPortfolio::ValidInterval{"1d"};
 class HttpStub: public Http
 {
 public:
-    std::string returnResponse;
-    std::string expectedUrl;
-    void initialize() override {}
-    std::string get(const std::string& url) const override 
-    {
-        verify(url);
-        return returnResponse;
-    }
-private: 
-    void verify(const std::string& url) const 
-    {
-        ASSERT_THAT(url, Eq(expectedUrl));
-    }
+    MOCK_METHOD(void, initialize, ());
+    MOCK_METHOD(std::string, get, (const std::string&), (const, override));
 };
 
 TEST_F(AFinancialPortfolio, IsEmptyWhenCreated)
@@ -220,24 +209,32 @@ TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
                 DoubleEq((100.0*5 + 200.0*10 - 150.0*3)/(5 + 10 - 3)));
 }
 
-TEST_F(AFinancialPortfolio, AnswersCurrentPriceForTicker)
+TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
 {
-    HttpStub httpStub;
+    std::unique_ptr<HttpStub> ptr{new HttpStub};
+    
     std::string urlStart{
             "https://query1.finance.yahoo.com/v8/finance/chart/"};
-    httpStub.expectedUrl = urlStart + AFinancialPortfolio::ValidTicker 
+    std::string expectedUrl = urlStart + AFinancialPortfolio::ValidTicker 
                         + "?period1=%" + AFinancialPortfolio::ValidTimestamp 
                         + "&period2=" + AFinancialPortfolio::ValidTimestamp 
                         + "&interval=" + AFinancialPortfolio::ValidInterval
                         + "&events=history";
+
+    EXPECT_CALL(*ptr, get(expectedUrl));
     
-    httpStub.returnResponse =
-    R"delim({"chart":{"result":[{"meta":{"currency":"USD","symbol":"IBM","exchangeName":"NYQ","instrumentType":"EQUITY","firstTradeDate":-252322200,"regularMarketTime":1646427602,"gmtoffset":-18000,"timezone":"EST","exchangeTimezoneName":"America/New_York","regularMarketPrice":126.62,"chartPreviousClose":125.93,"priceHint":2,"currentTradingPeriod":{"pre":{"timezone":"EST","end":1646404200,"start":1646384400,"gmtoffset":-18000},"regular":{"timezone":"EST","end":1646427600,"start":1646404200,"gmtoffset":-18000},"post":{"timezone":"EST","end":1646442000,"start":1646427600,"gmtoffset":-18000}},"dataGranularity":"1d","range":"","validRanges":["1d","5d","1mo","3mo","6mo","1y","2y","5y","10y","ytd","max"]},"timestamp":[1646427602],"indicators":{"quote":[{"open":[124.4000015258789],"low":[124.21029663085938],"volume":[4301826],"high":[127.3499984741211],"close":[126.62000274658203]}],"adjclose":[{"adjclose":[126.62000274658203]}]}}],"error":null}})delim";
-
-    portfolio.setHttp(std::make_shared<HttpStub>(httpStub));
-
-    double price = portfolio.currentPriceOfShare(IBM);
-
-    ASSERT_THAT(price, DoubleEq(126.62));
+    portfolio.setHttp(std::move(ptr));
+    portfolio.currentPriceOfShare(IBM);
 }
 
+TEST_F(AFinancialPortfolio, ExtractsCurrentPriceFromRetrievedJson)
+{
+    std::unique_ptr<HttpStub> ptr{new HttpStub};
+
+    EXPECT_CALL(*ptr, get(_)).WillOnce(Return(
+    R"delim({"chart":{"result":[{"meta":{"currency":"USD","symbol":"IBM","exchangeName":"NYQ","instrumentType":"EQUITY","firstTradeDate":-252322200,"regularMarketTime":1646427602,"gmtoffset":-18000,"timezone":"EST","exchangeTimezoneName":"America/New_York","regularMarketPrice":126.62,"chartPreviousClose":125.93,"priceHint":2,"currentTradingPeriod":{"pre":{"timezone":"EST","end":1646404200,"start":1646384400,"gmtoffset":-18000},"regular":{"timezone":"EST","end":1646427600,"start":1646404200,"gmtoffset":-18000},"post":{"timezone":"EST","end":1646442000,"start":1646427600,"gmtoffset":-18000}},"dataGranularity":"1d","range":"","validRanges":["1d","5d","1mo","3mo","6mo","1y","2y","5y","10y","ytd","max"]},"timestamp":[1646427602],"indicators":{"quote":[{"open":[124.4000015258789],"low":[124.21029663085938],"volume":[4301826],"high":[127.3499984741211],"close":[126.62000274658203]}],"adjclose":[{"adjclose":[126.62000274658203]}]}}],"error":null}})delim"));
+
+    portfolio.setHttp(std::move(ptr));
+    double price = portfolio.currentPriceOfShare(IBM);
+    ASSERT_THAT(price, DoubleEq(126.62));
+}
