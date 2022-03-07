@@ -69,7 +69,7 @@ void FinancialPortfolio::add(const std::string& ticker,
 }
 
 std::vector<PurchaseRecord> 
-        FinancialPortfolio::purchases(const std::string& ticker) const 
+        FinancialPortfolio::purchasesOfGivenTicker(const std::string& ticker) const 
 {
     return find<Holding>(m_holdings, ticker).purchases();
 }

@@ -1,5 +1,6 @@
 #include "FinancialPortfolio.h"
 #include "Http.h"
+#include "HttpStub.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/date_time/gregorian/gregorian_types.hpp>
@@ -55,7 +56,6 @@ protected:
         ASSERT_THAT(purchase.date, Eq(date));
     }
 };
-
 const date AFinancialPortfolio::ArbitraryDate(2014, Sep, 5);
 const date AFinancialPortfolio::TODAY(day_clock::local_day());
 const std::string AFinancialPortfolio::IBM{"IBM"};
@@ -63,13 +63,6 @@ const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
 const std::string AFinancialPortfolio::ValidTicker{"IBM"};
 const std::string AFinancialPortfolio::ValidTimestamp{"201646451256"};
 const std::string AFinancialPortfolio::ValidInterval{"1d"};
-
-class HttpStub: public Http
-{
-public:
-    MOCK_METHOD(void, initialize, ());
-    MOCK_METHOD(std::string, get, (const std::string&), (const, override));
-};
 
 TEST_F(AFinancialPortfolio, IsEmptyWhenCreated)
 {
@@ -140,7 +133,7 @@ TEST_F(AFinancialPortfolio, AnswersThePurchaseRecordForASinglePurchase)
 {
     purchase(SAMSUNG, 5, 100.00, ArbitraryDate);
 
-    auto purchases = portfolio.purchases(SAMSUNG);
+    auto purchases = portfolio.purchasesOfGivenTicker(SAMSUNG);
 
     ASSERT_PURCHASE(purchases[0], 5, 100.00, ArbitraryDate);
 }
@@ -150,7 +143,7 @@ TEST_F(AFinancialPortfolio, IncludesSalesInPurchaseRecords)
     purchase(SAMSUNG, 10);
     sell(SAMSUNG, 5, 100.00, ArbitraryDate);
     
-    auto sales = portfolio.purchases(SAMSUNG);
+    auto sales = portfolio.purchasesOfGivenTicker(SAMSUNG);
 
     ASSERT_PURCHASE(sales[1], -5, 100.00, ArbitraryDate);
 }
@@ -165,14 +158,14 @@ TEST_F(AFinancialPortfolio, SeparatesPurchaseRecordsByTicker)
     purchase(SAMSUNG, 5);
     purchase(IBM, 1);
 
-    auto sales = portfolio.purchases(SAMSUNG);
+    auto sales = portfolio.purchasesOfGivenTicker(SAMSUNG);
     ASSERT_THAT(sales, ElementsAre(PurchaseRecord(5, 0.0, ArbitraryDate)));
 }
 
 TEST_F(AFinancialPortfolio, 
         AnswersEmptyPurchaseRecordVectorWhenTickerNotFound)
 {
-    ASSERT_THAT(portfolio.purchases(SAMSUNG), 
+    ASSERT_THAT(portfolio.purchasesOfGivenTicker(SAMSUNG), 
                         Eq(std::vector<PurchaseRecord>()));
 }
 
@@ -186,7 +179,7 @@ bool isSameDay(const date& lhs, const date& rhs)
 TEST_F(AFinancialPortfolio, AnswersTodayForTransactionDateWhenNotSpecified)
 {
     portfolio.purchase(SAMSUNG, {10, 100.0});
-    auto purchases = portfolio.purchases(SAMSUNG);
+    auto purchases = portfolio.purchasesOfGivenTicker(SAMSUNG);
 
     ASSERT_THAT(purchases[0].date, Eq(TODAY));
 }
@@ -194,7 +187,7 @@ TEST_F(AFinancialPortfolio, AnswersTodayForTransactionDateWhenNotSpecified)
 TEST_F(AFinancialPortfolio, AnswersPriceOfSharesOnTransaction)
 {
     purchase(IBM, 5, 100.0, ArbitraryDate);
-    auto purchases = portfolio.purchases(IBM);
+    auto purchases = portfolio.purchasesOfGivenTicker(IBM);
 
     ASSERT_THAT(purchases[0].priceOnTransaction, DoubleEq(100.00));
 }
@@ -211,16 +204,15 @@ TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
 
 TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
 {
-    InSequence forceExpectationOrder;
     std::unique_ptr<HttpStub> ptr{new HttpStub};
-    
+    InSequence forceExpectationOrder;
     std::string urlStart{
             "https://query1.finance.yahoo.com/v8/finance/chart/"};
     std::string expectedUrl = urlStart + AFinancialPortfolio::ValidTicker 
-                        + "?period1=%" + AFinancialPortfolio::ValidTimestamp 
-                        + "&period2=" + AFinancialPortfolio::ValidTimestamp 
-                        + "&interval=" + AFinancialPortfolio::ValidInterval
-                        + "&events=history";
+                            + "?period1=%" + AFinancialPortfolio::ValidTimestamp 
+                            + "&period2=" + AFinancialPortfolio::ValidTimestamp 
+                            + "&interval=" + AFinancialPortfolio::ValidInterval
+                            + "&events=history";
 
     EXPECT_CALL(*ptr, initialize());
     EXPECT_CALL(*ptr, get(expectedUrl));
@@ -232,12 +224,12 @@ TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
 TEST_F(AFinancialPortfolio, ExtractsCurrentPriceFromRetrievedJson)
 {
     std::unique_ptr<NiceMock<HttpStub>> ptr{new NiceMock<HttpStub>};
-
     EXPECT_CALL(*ptr, get(_)).WillOnce(Return(
     R"delim({"chart":{"result":[{"meta":{"currency":"USD","symbol":"IBM","exchangeName":"NYQ","instrumentType":"EQUITY","firstTradeDate":-252322200,"regularMarketTime":1646427602,"gmtoffset":-18000,"timezone":"EST","exchangeTimezoneName":"America/New_York","regularMarketPrice":126.62,"chartPreviousClose":125.93,"priceHint":2,"currentTradingPeriod":{"pre":{"timezone":"EST","end":1646404200,"start":1646384400,"gmtoffset":-18000},"regular":{"timezone":"EST","end":1646427600,"start":1646404200,"gmtoffset":-18000},"post":{"timezone":"EST","end":1646442000,"start":1646427600,"gmtoffset":-18000}},"dataGranularity":"1d","range":"","validRanges":["1d","5d","1mo","3mo","6mo","1y","2y","5y","10y","ytd","max"]},"timestamp":[1646427602],"indicators":{"quote":[{"open":[124.4000015258789],"low":[124.21029663085938],"volume":[4301826],"high":[127.3499984741211],"close":[126.62000274658203]}],"adjclose":[{"adjclose":[126.62000274658203]}]}}],"error":null}})delim"));
-
     portfolio.setHttp(std::move(ptr));
+    
     double price = portfolio.currentPriceOfShare(IBM);
+
     ASSERT_THAT(price, DoubleEq(126.62));
 }
 
@@ -247,5 +239,6 @@ TEST_F(AFinancialPortfolio, ReturnsZeroWhenPriceRetrievingFailed)
     portfolio.setHttp(std::move(ptr));
 
     double price = portfolio.currentPriceOfShare("");
+
     ASSERT_THAT(price, DoubleEq(0.0)); 
 }

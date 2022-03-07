@@ -28,7 +28,7 @@ public:
     void sell(const std::string& ticker, 
               PurchaseRecord&& record);
     int shareCount(const std::string& ticker) const;
-    std::vector<PurchaseRecord> purchases(const std::string& ticker) const;
+    std::vector<PurchaseRecord> purchasesOfGivenTicker(const std::string& ticker) const;
     double averagePurchasePrice(const std::string& ticker) const;
     double currentPriceOfShare(const std::string& ticker) const;
     void setHttp(std::unique_ptr<Http> http);
