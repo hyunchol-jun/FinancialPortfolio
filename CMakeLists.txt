@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(FinancialPortfolio)
 
-include_directories($ENV{HOMEBREW_CELLAR}/boost/1.78.0/include/ $ENV{HOMEBREW_CELLAR}/nlohmann-json/3.10.4/include)
+include_directories($ENV{HOMEBREW_CELLAR}/boost/1.78.0/include/ 
+                    $ENV{HOMEBREW_CELLAR}/nlohmann-json/3.10.4/include)
 
 # GoogleTest requires at least C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -21,6 +22,8 @@ set(sources
     src/FinancialPortfolio.cpp
     src/HoldingTest.cpp
     src/Holding.cpp
+    src/CurlHttpTest.cpp
+    src/CurlHttp.cpp
     )
     
 add_executable(
@@ -28,9 +31,12 @@ add_executable(
     ${sources}
     )
 
+find_package(CURL REQUIRED)
+
 target_link_libraries(
     FinancialPortfolioTest
     gmock_main
+    CURL::libcurl
     )
 
 include(GoogleTest)
