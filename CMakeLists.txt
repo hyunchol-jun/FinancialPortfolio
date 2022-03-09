@@ -24,6 +24,7 @@ set(sources
     src/Holding.cpp
     src/CurlHttpTest.cpp
     src/CurlHttp.cpp
+    src/DateTest.cpp
     )
     
 add_executable(
