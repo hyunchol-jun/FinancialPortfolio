@@ -1,18 +1,17 @@
 #include "Holding.h"
-#include <boost/date_time/gregorian/gregorian_types.hpp>
+#include "Date.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 using namespace::testing;
-using namespace::boost::gregorian;
 
 class AHolding : public Test
 {
 protected:
     Holding holding;
-    static const date ArbitraryDate;
+    static const Date ArbitraryDate;
 };
-const date AHolding::ArbitraryDate(2014, Sep, 5);
+const Date AHolding::ArbitraryDate(2014, Date::Sep, 5);
 
 TEST_F(AHolding, ContainsZeroSharesWhenCreated)
 {

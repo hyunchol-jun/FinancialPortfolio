@@ -1,14 +1,13 @@
+#include "Date.h"
 #include "FinancialPortfolio.h"
 #include "Http.h"
 #include "HttpStub.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <iostream>
 #include <memory>
 
 using namespace ::testing;
-using namespace boost::gregorian;
 
 
 class AFinancialPortfolio: public Test
@@ -22,13 +21,13 @@ protected:
     static const std::string IBM;
     static const std::string SAMSUNG;
     FinancialPortfolio portfolio;
-    static const date ArbitraryDate;
-    static const date TODAY;
+    static const Date ArbitraryDate;
+    static const Date TODAY;
 
     void purchase(const std::string& ticker,
                   int shareCount,
                   double purchasePrice=0.0,
-                  const date& 
+                  const Date& 
                         transactionDate=AFinancialPortfolio::ArbitraryDate)
     {
         portfolio.purchase(ticker, 
@@ -38,7 +37,7 @@ protected:
     void sell(const std::string& ticker,
               int shareCount,
               double salePrice=0.0,
-              const date&
+              const Date&
                         transactionDate=AFinancialPortfolio::ArbitraryDate)
 
     {
@@ -49,15 +48,15 @@ protected:
     void ASSERT_PURCHASE(PurchaseRecord& purchase, 
                          int shareCount, 
                          double purchasePrice,
-                         const date& date)
+                         const Date& date)
     {
         ASSERT_THAT(purchase.shareCount, Eq(shareCount));
         ASSERT_THAT(purchase.priceOnTransaction, DoubleEq(purchasePrice));
         ASSERT_THAT(purchase.date, Eq(date));
     }
 };
-const date AFinancialPortfolio::ArbitraryDate(2014, Sep, 5);
-const date AFinancialPortfolio::TODAY(day_clock::local_day());
+const Date AFinancialPortfolio::TODAY{};
+const Date AFinancialPortfolio::ArbitraryDate(2014, Date::Sep, 5);
 const std::string AFinancialPortfolio::IBM{"IBM"};
 const std::string AFinancialPortfolio::SAMSUNG{"SSNLF"};
 const std::string AFinancialPortfolio::ValidTicker{"IBM"};
@@ -148,6 +147,11 @@ TEST_F(AFinancialPortfolio, IncludesSalesInPurchaseRecords)
     ASSERT_PURCHASE(sales[1], -5, 100.00, ArbitraryDate);
 }
 
+bool operator==(const Date& lhs, const Date& rhs)
+{
+    return lhs.m_date == rhs.m_date;
+}
+
 bool operator==(const PurchaseRecord& lhs, const PurchaseRecord& rhs)
 {
     return lhs.shareCount == rhs.shareCount && lhs.date == rhs.date;
@@ -167,13 +171,6 @@ TEST_F(AFinancialPortfolio,
 {
     ASSERT_THAT(portfolio.purchasesOfGivenTicker(SAMSUNG), 
                         Eq(std::vector<PurchaseRecord>()));
-}
-
-bool isSameDay(const date& lhs, const date& rhs)
-{
-    return lhs.year() == rhs.year() && 
-           lhs.month() == rhs.month() && 
-           lhs.day() == rhs.day();
 }
 
 TEST_F(AFinancialPortfolio, AnswersTodayForTransactionDateWhenNotSpecified)
