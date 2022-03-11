@@ -25,6 +25,7 @@ set(sources
     src/CurlHttpTest.cpp
     src/CurlHttp.cpp
     src/DateTest.cpp
+    src/WtPortfolioDisplayerTest.cpp
     )
     
 add_executable(
