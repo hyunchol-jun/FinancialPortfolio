@@ -28,5 +28,5 @@ TEST(AWtPortfolioDisplayer, HasTableToShowCurrentPortfolio)
             displayer.m_currentPortfolioTable->elementAt(0,0)->widget(0));
 
     ASSERT_THAT(firstElementTextPointer->text(), 
-                        Eq(WtPortfolioDisplayer::FirstColumnName));
+                        Eq(WtPortfolioDisplayer::TableHeader[0]));
 }
