@@ -3,3 +3,7 @@ build
 
 # Ignore .swp files
 *.swp
+
+# Ignore Wt interface testing files
+hello
+src/main.cpp
