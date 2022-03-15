@@ -28,8 +28,9 @@ private:
     void AddColumnHeadingToPortfolioTable();
     void addCellToPortfolioTable(int row, int column);
     void makeFirstRowOfTableHeader();
-    int newRowNumberToAppend();
+    int nextRowNumber();
     void fillInTableCellsOf(int rowNumber);
+    void appendRowToTableWith(const std::vector<std::string>& recordRow);
 };
 
 #endif

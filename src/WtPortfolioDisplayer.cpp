@@ -28,7 +28,7 @@ void WtPortfolioDisplayer::createEmptyPortfolioTable()
 
 void WtPortfolioDisplayer::AddColumnHeadingToPortfolioTable()
 {
-    fillInTableCellsOf(newRowNumberToAppend());
+    appendRowToTableWith(TableHeader);
     makeFirstRowOfTableHeader();
 }
 
@@ -37,17 +37,19 @@ void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
     m_currentPortfolioTable->setHeaderCount(1);
 }
 
-void WtPortfolioDisplayer::fillInTableCellsOf(int rowNumber)
+void WtPortfolioDisplayer::appendRowToTableWith(
+                    const std::vector<std::string>& recordRow)
 {
+    int rowNumber = nextRowNumber();
     int i{0};
-    while (i < TableHeader.size())
+    while (i < recordRow.size())
     {
         addCellToPortfolioTable(rowNumber, i);
         ++i;
     }
 }
 
-int WtPortfolioDisplayer::newRowNumberToAppend()
+int WtPortfolioDisplayer::nextRowNumber()
 {
     return m_currentPortfolioTable->rowCount();
 }
