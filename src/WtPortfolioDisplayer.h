@@ -36,6 +36,8 @@ private:
     void appendRowToTableWith(const std::vector<std::string>& recordRow);
     void setPortfolioPointerWith(
                     std::unique_ptr<FinancialPortfolio> portfolioPointer);
+    void addHoldingVectorToTable(
+                        const std::vector<Holding> holdings);
     std::vector<std::string> convertHoldingToStringVector(
                         const std::string& ticker, const Holding& holding);
 

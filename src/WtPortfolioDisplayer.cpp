@@ -12,7 +12,12 @@ void WtPortfolioDisplayer::populateWindow()
     writeSubtitle(Subtitle);
     createEmptyPortfolioTable();
     addColumnHeadingToPortfolioTable();
-    appendRowToTableWith({"IBM", "5", "100.0", "125.0", "125.0"});
+    Holding holding1;
+    holding1.add({5, 100.0, {2021, Date::Sep, 15}});
+    Holding holding2;
+    holding2.add({10, 110.0, {2022, Date::Oct, 25}});
+    std::vector<Holding> holdings{holding1, holding2};
+    addHoldingVectorToTable(holdings);
 }
 
 void WtPortfolioDisplayer::writeSubtitle(const std::string& subtitle)
@@ -36,6 +41,15 @@ void WtPortfolioDisplayer::addColumnHeadingToPortfolioTable()
 void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
 {
     m_currentPortfolioTable->setHeaderCount(1);
+}
+
+void WtPortfolioDisplayer::addHoldingVectorToTable(
+        const std::vector<Holding> holdings)
+{
+    for (const auto& holding: holdings)
+    {
+        appendRowToTableWith(convertHoldingToStringVector("IBM", holding));
+    }
 }
 
 std::vector<std::string> WtPortfolioDisplayer::convertHoldingToStringVector(
