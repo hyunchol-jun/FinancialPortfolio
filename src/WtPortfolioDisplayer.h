@@ -9,14 +9,14 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 class WtPortfolioDisplayer : public Wt::WApplication
 {
 public:
     static const std::string Title;
     static const std::string Subtitle;
-    static constexpr int TableColumnSize{6};
-    static const std::string TableHeader[TableColumnSize];
+    static const std::vector<std::string> TableHeader;
     WtPortfolioDisplayer(const Wt::WEnvironment& env);
     void populateWindow();
     void writeSubtitle(const std::string& subtitle);

@@ -40,7 +40,7 @@ void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
 void WtPortfolioDisplayer::fillInTableCellsOf(int rowNumber)
 {
     int i{0};
-    while (i < TableColumnSize)
+    while (i < TableHeader.size())
     {
         addCellToPortfolioTable(rowNumber, i);
         ++i;
@@ -60,7 +60,7 @@ void WtPortfolioDisplayer::addCellToPortfolioTable(int row, int column)
 
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");
 const std::string WtPortfolioDisplayer::Subtitle("My Portfolio");
-const std::string WtPortfolioDisplayer::TableHeader[]{
+const std::vector<std::string> WtPortfolioDisplayer::TableHeader{
     "Date",
     "Ticker",
     "Position",
