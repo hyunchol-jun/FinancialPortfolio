@@ -1,5 +1,6 @@
 #ifndef WtPortfolioDisplayer_h
 #define WtPortfolioDisplayer_h
+#include "FinancialPortfolio.h"
 #include <Wt/Test/WTestEnvironment.h>
 #include <Wt/WEnvironment.h>
 #include <Wt/WApplication.h>
@@ -32,6 +33,10 @@ private:
     int nextRowNumber();
     void fillInTableCellsOf(int rowNumber);
     void appendRowToTableWith(const std::vector<std::string>& recordRow);
+    void setPortfolioPointerWith(
+                    std::unique_ptr<FinancialPortfolio> portfolioPointer);
+
+    std::unique_ptr<FinancialPortfolio> portfolio;
 };
 
 #endif

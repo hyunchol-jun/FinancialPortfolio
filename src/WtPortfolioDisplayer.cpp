@@ -59,6 +59,12 @@ void WtPortfolioDisplayer::addCellToPortfolioTable(
         ->addWidget(std::make_unique<Wt::WText>(cellData));
 }
 
+void WtPortfolioDisplayer::setPortfolioPointerWith(
+        std::unique_ptr<FinancialPortfolio> portfolioPointer)
+{
+
+}
+
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");
 const std::string WtPortfolioDisplayer::Subtitle("My Portfolio");
 const std::vector<std::string> WtPortfolioDisplayer::TableHeader{

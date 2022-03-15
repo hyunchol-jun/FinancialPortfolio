@@ -26,10 +26,10 @@ TEST(AWtPortfolioDisplayer, HasTableToShowCurrentPortfolio)
     Wt::Test::WTestEnvironment testEnvironment;
     WtPortfolioDisplayer displayer(testEnvironment);
 
-    auto firstElementTextPointer = dynamic_cast<Wt::WText*>(
+    auto pointerToFirstHeader = dynamic_cast<Wt::WText*>(
             displayer.m_currentPortfolioTable->elementAt(0,0)->widget(0));
 
-    ASSERT_THAT(firstElementTextPointer->text(), 
+    ASSERT_THAT(pointerToFirstHeader->text(), 
                         Eq(WtPortfolioDisplayer::TableHeader[0]));
 }
 
@@ -40,8 +40,8 @@ TEST(AWtPortfolioDisplayer, ShowsCurrentPortfolioRecords)
     FinancialPortfolio portfolio;
     portfolio.purchase("IBM", {5, 100.0, {2021, Date::Sep, 15}});
 
-    auto firstElementTextPointer = dynamic_cast<Wt::WText*>(
+    auto pointerToFirstTicker = dynamic_cast<Wt::WText*>(
             displayer.m_currentPortfolioTable->elementAt(1,0)->widget(0));
-    ASSERT_THAT(firstElementTextPointer->text(),
-                        Eq("IBM"));
+
+    ASSERT_THAT(pointerToFirstTicker->text(), Eq("IBM"));
 }
