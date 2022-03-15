@@ -26,7 +26,8 @@ public:
     Wt::WTable* m_currentPortfolioTable;
 private:
     void AddColumnHeadingToPortfolioTable();
-    void addCellToPortfolioTable(int row, int column);
+    void addCellToPortfolioTable(
+                        int row, int column, const std::string& cellData);
     void makeFirstRowOfTableHeader();
     int nextRowNumber();
     void fillInTableCellsOf(int rowNumber);

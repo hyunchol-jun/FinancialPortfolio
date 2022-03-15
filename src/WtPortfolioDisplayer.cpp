@@ -44,7 +44,7 @@ void WtPortfolioDisplayer::appendRowToTableWith(
     int i{0};
     while (i < recordRow.size())
     {
-        addCellToPortfolioTable(rowNumber, i);
+        addCellToPortfolioTable(rowNumber, i, recordRow[i]);
         ++i;
     }
 }
@@ -54,10 +54,11 @@ int WtPortfolioDisplayer::nextRowNumber()
     return m_currentPortfolioTable->rowCount();
 }
 
-void WtPortfolioDisplayer::addCellToPortfolioTable(int row, int column)
+void WtPortfolioDisplayer::addCellToPortfolioTable(
+                int row, int column, const std::string& cellData)
 {
     m_currentPortfolioTable->elementAt(row, column)
-        ->addWidget(std::make_unique<Wt::WText>(TableHeader[column]));
+        ->addWidget(std::make_unique<Wt::WText>(cellData));
 }
 
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");
