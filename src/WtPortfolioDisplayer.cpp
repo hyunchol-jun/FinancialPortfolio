@@ -38,6 +38,20 @@ void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
     m_currentPortfolioTable->setHeaderCount(1);
 }
 
+std::vector<std::string> WtPortfolioDisplayer::convertHoldingToStringVector(
+        const std::string& ticker, const Holding& holding)
+{
+    std::vector<std::string> resultVector{ticker};
+    int shareCount{holding.shareCount()};
+    double avgPrice{holding.averagePurchasePrice()}, currPrice{125.0};
+    resultVector.push_back(std::to_string(shareCount));
+    resultVector.push_back(std::to_string(avgPrice));
+    resultVector.push_back(std::to_string(currPrice));
+    resultVector.push_back(
+            std::to_string((currPrice-avgPrice) * shareCount));
+    return resultVector;
+}
+
 void WtPortfolioDisplayer::appendRowToTableWith(
                     const std::vector<std::string>& recordRow)
 {
