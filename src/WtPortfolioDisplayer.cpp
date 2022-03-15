@@ -11,7 +11,8 @@ void WtPortfolioDisplayer::populateWindow()
 {
     writeSubtitle(Subtitle);
     createEmptyPortfolioTable();
-    AddColumnHeadingToPortfolioTable();
+    addColumnHeadingToPortfolioTable();
+    appendRowToTableWith({"IBM", "5", "100.0", "125.0", "125.0"});
 }
 
 void WtPortfolioDisplayer::writeSubtitle(const std::string& subtitle)
@@ -26,7 +27,7 @@ void WtPortfolioDisplayer::createEmptyPortfolioTable()
         root()->addWidget(std::make_unique<Wt::WTable>());
 }
 
-void WtPortfolioDisplayer::AddColumnHeadingToPortfolioTable()
+void WtPortfolioDisplayer::addColumnHeadingToPortfolioTable()
 {
     appendRowToTableWith(TableHeader);
     makeFirstRowOfTableHeader();
@@ -68,7 +69,6 @@ void WtPortfolioDisplayer::setPortfolioPointerWith(
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");
 const std::string WtPortfolioDisplayer::Subtitle("My Portfolio");
 const std::vector<std::string> WtPortfolioDisplayer::TableHeader{
-    "Date",
     "Ticker",
     "Position",
     "Avg Price",

@@ -26,7 +26,7 @@ public:
     Wt::WText* m_subtitle;
     Wt::WTable* m_currentPortfolioTable;
 private:
-    void AddColumnHeadingToPortfolioTable();
+    void addColumnHeadingToPortfolioTable();
     void addCellToPortfolioTable(
                         int row, int column, const std::string& cellData);
     void makeFirstRowOfTableHeader();
