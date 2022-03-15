@@ -40,12 +40,10 @@ void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
 void WtPortfolioDisplayer::appendRowToTableWith(
                     const std::vector<std::string>& recordRow)
 {
-    int rowNumber = nextRowNumber();
-    int i{0};
-    while (i < recordRow.size())
+    int rowNumber{nextRowNumber()};
+    for (int i{0}; i < recordRow.size(); ++i)
     {
         addCellToPortfolioTable(rowNumber, i, recordRow[i]);
-        ++i;
     }
 }
 
