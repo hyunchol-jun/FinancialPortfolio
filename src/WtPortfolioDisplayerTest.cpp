@@ -1,3 +1,5 @@
+#include "Date.h"
+#include "FinancialPortfolio.h"
 #include "WtPortfolioDisplayer.h"
 #include <gmock/gmock.h>
 using namespace testing;
@@ -29,4 +31,17 @@ TEST(AWtPortfolioDisplayer, HasTableToShowCurrentPortfolio)
 
     ASSERT_THAT(firstElementTextPointer->text(), 
                         Eq(WtPortfolioDisplayer::TableHeader[0]));
+}
+
+TEST(AWtPortfolioDisplayer, ShowsCurrentPortfolioRecords)
+{
+    Wt::Test::WTestEnvironment testEnvironment;
+    WtPortfolioDisplayer displayer(testEnvironment);
+    FinancialPortfolio portfolio;
+    portfolio.purchase("IBM", {5, 100.0, {2021, Date::Sep, 15}});
+
+    auto firstElementTextPointer = dynamic_cast<Wt::WText*>(
+            displayer.m_currentPortfolioTable->elementAt(1,0)->widget(0));
+    ASSERT_THAT(firstElementTextPointer->text(),
+                        Eq("IBM"));
 }
