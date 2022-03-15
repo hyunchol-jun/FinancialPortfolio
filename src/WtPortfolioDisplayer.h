@@ -36,7 +36,7 @@ private:
     void setPortfolioPointerWith(
                     std::unique_ptr<FinancialPortfolio> portfolioPointer);
 
-    std::unique_ptr<FinancialPortfolio> portfolio;
+    std::unique_ptr<FinancialPortfolio> m_portfolioPtr;
 };
 
 #endif

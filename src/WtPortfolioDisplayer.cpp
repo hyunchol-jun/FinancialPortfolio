@@ -62,7 +62,7 @@ void WtPortfolioDisplayer::addCellToPortfolioTable(
 void WtPortfolioDisplayer::setPortfolioPointerWith(
         std::unique_ptr<FinancialPortfolio> portfolioPointer)
 {
-
+    m_portfolioPtr = std::move(portfolioPointer);
 }
 
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");
