@@ -122,3 +122,29 @@ void FinancialPortfolio::setHttp(std::unique_ptr<Http> http)
 {
     m_http = std::move(http);
 }
+
+std::vector<std::vector<std::string>> 
+                FinancialPortfolio::holdingsConvertedToStringVector() const
+{
+    std::vector<std::vector<std::string>> resultVector;
+    for (const auto& element: m_holdings)
+    {
+        resultVector.push_back(
+            singleHoldingInStringVector(element.first, element.second));
+    }
+    return resultVector;
+}
+
+std::vector<std::string> FinancialPortfolio::singleHoldingInStringVector(
+        const std::string& ticker, const Holding& holding) const
+{
+    std::vector<std::string> resultVector{ticker};
+    int shareCount{holding.shareCount()};
+    double avgPrice{holding.averagePurchasePrice()}, currPrice{125.0};
+    resultVector.push_back(std::to_string(shareCount));
+    resultVector.push_back(std::to_string(avgPrice));
+    resultVector.push_back(std::to_string(currPrice));
+    resultVector.push_back(
+            std::to_string((currPrice-avgPrice) * shareCount));
+    return resultVector;
+}

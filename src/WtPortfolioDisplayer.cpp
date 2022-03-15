@@ -12,12 +12,6 @@ void WtPortfolioDisplayer::populateWindow()
     writeSubtitle(Subtitle);
     createEmptyPortfolioTable();
     addColumnHeadingToPortfolioTable();
-    Holding holding1;
-    holding1.add({5, 100.0, {2021, Date::Sep, 15}});
-    Holding holding2;
-    holding2.add({10, 110.0, {2022, Date::Oct, 25}});
-    std::vector<Holding> holdings{holding1, holding2};
-    addHoldingVectorToTable(holdings);
 }
 
 void WtPortfolioDisplayer::writeSubtitle(const std::string& subtitle)
@@ -44,26 +38,12 @@ void WtPortfolioDisplayer::makeFirstRowOfTableHeader()
 }
 
 void WtPortfolioDisplayer::addHoldingVectorToTable(
-        const std::vector<Holding> holdings)
+        const std::vector<std::vector<std::string>>& holdings)
 {
     for (const auto& holding: holdings)
     {
-        appendRowToTableWith(convertHoldingToStringVector("IBM", holding));
+        appendRowToTableWith(holding);
     }
-}
-
-std::vector<std::string> WtPortfolioDisplayer::convertHoldingToStringVector(
-        const std::string& ticker, const Holding& holding)
-{
-    std::vector<std::string> resultVector{ticker};
-    int shareCount{holding.shareCount()};
-    double avgPrice{holding.averagePurchasePrice()}, currPrice{125.0};
-    resultVector.push_back(std::to_string(shareCount));
-    resultVector.push_back(std::to_string(avgPrice));
-    resultVector.push_back(std::to_string(currPrice));
-    resultVector.push_back(
-            std::to_string((currPrice-avgPrice) * shareCount));
-    return resultVector;
 }
 
 void WtPortfolioDisplayer::appendRowToTableWith(
@@ -92,6 +72,11 @@ void WtPortfolioDisplayer::setPortfolioPointerWith(
         std::unique_ptr<FinancialPortfolio> portfolioPointer)
 {
     m_portfolioPtr = std::move(portfolioPointer);
+}
+
+void WtPortfolioDisplayer::updateScreen()
+{
+    addHoldingVectorToTable(m_portfolioPtr->holdingsConvertedToStringVector());
 }
 
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");

@@ -22,6 +22,7 @@ class InsufficientSharesException: public std::exception
 class FinancialPortfolio
 {
 public:
+    friend class WtPortfolioDisplayer;
     bool isEmpty() const;
     void purchase(const std::string& ticker, 
                   PurchaseRecord&& record);
@@ -48,6 +49,10 @@ private:
     std::string yahooFinanceRequestUrl(const std::string& ticker,
                                  const std::string& Timestamp) const;
     double parsedCurrentPriceFromJson(const std::string& response) const;
+    std::vector<std::string> singleHoldingInStringVector(
+                const std::string& ticker, const Holding& holding) const;
+    std::vector<std::vector<std::string>> 
+                                holdingsConvertedToStringVector() const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const

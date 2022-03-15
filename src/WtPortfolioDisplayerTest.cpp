@@ -39,6 +39,9 @@ TEST(AWtPortfolioDisplayer, ShowsCurrentPortfolioRecords)
     WtPortfolioDisplayer displayer(testEnvironment);
     FinancialPortfolio portfolio;
     portfolio.purchase("IBM", {5, 100.0, {2021, Date::Sep, 15}});
+    displayer.setPortfolioPointerWith(
+                    std::make_unique<FinancialPortfolio>(std::move(portfolio)));
+    displayer.updateScreen();
 
     auto pointerToFirstTicker = dynamic_cast<Wt::WText*>(
             displayer.m_currentPortfolioTable->elementAt(1,0)->widget(0));

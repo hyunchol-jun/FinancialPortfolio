@@ -1,6 +1,5 @@
 #ifndef WtPortfolioDisplayer_h
 #define WtPortfolioDisplayer_h
-#include "Holding.h"
 #include "FinancialPortfolio.h"
 #include <Wt/Test/WTestEnvironment.h>
 #include <Wt/WEnvironment.h>
@@ -23,6 +22,9 @@ public:
     void populateWindow();
     void writeSubtitle(const std::string& subtitle);
     void createEmptyPortfolioTable();
+    void setPortfolioPointerWith(
+                    std::unique_ptr<FinancialPortfolio> portfolioPointer);
+    void updateScreen();
 
     Wt::WText* m_subtitle;
     Wt::WTable* m_currentPortfolioTable;
@@ -34,12 +36,8 @@ private:
     int nextRowNumber();
     void fillInTableCellsOf(int rowNumber);
     void appendRowToTableWith(const std::vector<std::string>& recordRow);
-    void setPortfolioPointerWith(
-                    std::unique_ptr<FinancialPortfolio> portfolioPointer);
     void addHoldingVectorToTable(
-                        const std::vector<Holding> holdings);
-    std::vector<std::string> convertHoldingToStringVector(
-                        const std::string& ticker, const Holding& holding);
+                    const std::vector<std::vector<std::string>>& holdings);
 
     std::unique_ptr<FinancialPortfolio> m_portfolioPtr;
 };
