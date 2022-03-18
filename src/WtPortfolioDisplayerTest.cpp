@@ -48,3 +48,4 @@ TEST(AWtPortfolioDisplayer, ShowsCurrentPortfolioRecords)
 
     ASSERT_THAT(pointerToFirstTicker->text(), Eq("IBM"));
 }
+

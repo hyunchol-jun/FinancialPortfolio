@@ -1,5 +1,6 @@
 #ifndef FinancialPortfolio_h
 #define FinancialPortfolio_h
+#include "Account.h"
 #include "Http.h"
 #include "Holding.h"
 #include "JsonParser.h"
