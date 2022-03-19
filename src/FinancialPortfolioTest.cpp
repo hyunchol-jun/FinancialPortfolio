@@ -2,6 +2,7 @@
 #include "FinancialPortfolio.h"
 #include "Http.h"
 #include "HttpStub.h"
+#include "PurchaseRecord.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <iostream>

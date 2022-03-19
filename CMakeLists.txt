@@ -31,6 +31,7 @@ set(sources
     src/WtPortfolioDisplayerTest.cpp
     src/WtPortfolioDisplayer.cpp
     src/Account.cpp
+    src/AccountTest.cpp
     )
     
 add_executable(
