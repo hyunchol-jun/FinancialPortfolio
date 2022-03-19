@@ -45,6 +45,10 @@ private:
     double parsedCurrentPriceFromJson(const std::string& response) const;
     std::vector<std::vector<std::string>> 
                                 holdingsInAllAccounts() const;
+    void appendHoldingsVectorTo(
+            std::vector<std::vector<std::string>>& totalHoldings,
+            const std::vector<std::vector<std::string>>& holdingsFromAccount) 
+            const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const

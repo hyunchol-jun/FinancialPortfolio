@@ -113,10 +113,20 @@ std::vector<std::vector<std::string>>
     std::vector<std::vector<std::string>> resultVector;
     for (const auto& account: m_accounts)
     {
-        auto V = account.holdingsConvertedToStringVector();
-        resultVector.insert(resultVector.end(), V.begin(), V.end());
+        appendHoldingsVectorTo(resultVector,
+                        account.holdingsConvertedToStringVector());
     }
     return resultVector;
+}
+
+void FinancialPortfolio::appendHoldingsVectorTo(
+            std::vector<std::vector<std::string>>& totalHoldings,
+            const std::vector<std::vector<std::string>>& holdingsFromAccount)
+            const
+{
+    totalHoldings.insert(totalHoldings.end(), 
+                         holdingsFromAccount.begin(), 
+                         holdingsFromAccount.end());
 }
 
 std::vector<Account> FinancialPortfolio::accountsOfHolder(
