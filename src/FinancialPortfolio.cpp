@@ -88,7 +88,6 @@ double FinancialPortfolio::parsedCurrentPriceFromJson(
 std::string FinancialPortfolio::yahooFinanceResponse(const std::string& ticker)
     const
 {
-    m_http->initialize();
     return m_http->get(yahooFinanceRequestUrl(ticker, "201646451256"));
 }
 
@@ -105,6 +104,7 @@ std::string FinancialPortfolio::yahooFinanceRequestUrl(
 void FinancialPortfolio::setHttp(std::unique_ptr<Http> http)
 {
     m_http = std::move(http);
+    m_http->initialize();
 }
 
 std::vector<std::vector<std::string>> 
@@ -136,6 +136,9 @@ std::vector<std::string> FinancialPortfolio::singleHoldingInStringVector(
 std::vector<Account> FinancialPortfolio::accountsOfHolder(
                                         const std::string& holder) const
 {
-    Account temporaryAccount{};
-    return std::vector<Account>{temporaryAccount};
+    std::vector<Account> accounts{};
+    for (const auto& account: m_accounts)
+        if (account.holderName() == holder)
+            accounts.push_back(account);
+    return accounts;
 }
