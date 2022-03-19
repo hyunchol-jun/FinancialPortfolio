@@ -76,7 +76,7 @@ void WtPortfolioDisplayer::setPortfolioPointerWith(
 
 void WtPortfolioDisplayer::updateScreen()
 {
-    addHoldingVectorToTable(m_portfolioPtr->holdingsConvertedToStringVector());
+    addHoldingVectorToTable(m_portfolioPtr->holdingsInAllAccounts());
 }
 
 const std::string WtPortfolioDisplayer::Title("Financial Portfolio");

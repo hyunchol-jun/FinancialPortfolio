@@ -43,10 +43,8 @@ private:
     std::string yahooFinanceRequestUrl(const std::string& ticker,
                                  const std::string& Timestamp) const;
     double parsedCurrentPriceFromJson(const std::string& response) const;
-    std::vector<std::string> singleHoldingInStringVector(
-                const std::string& ticker, const Holding& holding) const;
     std::vector<std::vector<std::string>> 
-                                holdingsConvertedToStringVector() const;
+                                holdingsInAllAccounts() const;
     template<typename T> 
     T find(std::unordered_map<std::string, T> map, const std::string& key) 
         const
@@ -55,7 +53,6 @@ private:
         return it == map.end() ?  T{} : it->second;
     }
 
-    std::unordered_map<std::string, Holding> m_holdings;
     std::unique_ptr<Http> m_http;
 };
 
