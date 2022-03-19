@@ -16,6 +16,6 @@ public:
     Date(unsigned int year, Month month, unsigned int day) :
         m_date(year, month, day) {}
 
-    const boost::gregorian::date m_date;
+    boost::gregorian::date m_date;
 };
 #endif

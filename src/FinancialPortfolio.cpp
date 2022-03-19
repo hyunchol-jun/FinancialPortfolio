@@ -2,92 +2,76 @@
 
 bool FinancialPortfolio::isEmpty() const
 {
-    return 0 == m_holdings.size();
+    for (const auto& account : m_accounts)
+        if (!account.isEmpty()) return false;
+    return true;
 }
 
-void FinancialPortfolio::purchase(const std::string& ticker, 
-                                  PurchaseRecord&& record)
+void FinancialPortfolio::addAccount(Account&& account)
 {
-    transact(ticker, record);
+    m_accounts.push_back(account);
 }
 
-void FinancialPortfolio::sell(const std::string& ticker, 
-                              PurchaseRecord&& record)
+void FinancialPortfolio::purchaseForAccount(const std::string& ticker, 
+                                            PurchaseRecord&& record,
+                                            Account& account)
 {
-    throwIfNotEnoughSharesToSell(ticker, record);
-    negateShareCountForSale(record);
-    transact(ticker, record);
+    account.purchase(ticker, record);
 }
 
-void FinancialPortfolio::throwIfNotEnoughSharesToSell(
-                                                const std::string& ticker,
-                                                const PurchaseRecord& record)
+void FinancialPortfolio::sellForAccount(const std::string& ticker, 
+                                        PurchaseRecord&& record,
+                                        Account& account)
 {
-    if (record.shareCount > shareCount(ticker)) 
-        throw InsufficientSharesException();
-}
-
-void FinancialPortfolio::negateShareCountForSale(PurchaseRecord& record)
-{
-    record.shareCount = -record.shareCount;
-}
-
-void FinancialPortfolio::transact(const std::string& ticker, 
-                                  const PurchaseRecord& record)
-{
-    throwIfShareCountIsZero(record.shareCount);
-    addPurchaseRecord(ticker, record);
-}
-
-void FinancialPortfolio::throwIfShareCountIsZero(int shareChange) const
-{
-    if (shareChange == 0) throw ShareCountCannotBeZeroException();
-}
-
-void FinancialPortfolio::addPurchaseRecord(const std::string& ticker,
-                                           const PurchaseRecord& record)
-{
-    if (!containsTicker(ticker))
-        initializePurchaseRecords(ticker);
-    add(ticker, record);
-}
-
-bool FinancialPortfolio::containsTicker(const std::string& ticker) const
-{
-    return m_holdings.find(ticker) != m_holdings.end();
-}
-
-void FinancialPortfolio::initializePurchaseRecords(const std::string& ticker)
-{
-    m_holdings[ticker] = Holding();
-}
-
-void FinancialPortfolio::add(const std::string& ticker, 
-                             const PurchaseRecord& record)
-{
-    m_holdings[ticker].add(record);
+    account.sell(ticker, record);
 }
 
 std::vector<PurchaseRecord> 
-        FinancialPortfolio::purchasesOfGivenTicker(const std::string& ticker) const 
+        FinancialPortfolio::purchasesOfGivenTicker(
+                            const std::string& ticker) const 
 {
-    return find<Holding>(m_holdings, ticker).purchases();
+    std::vector<PurchaseRecord> purchases;
+    combineAllPurchaseRecordsOfTicker(purchases, ticker);
+    return purchases; 
 }
+
+void FinancialPortfolio::combineAllPurchaseRecordsOfTicker(
+                        std::vector<PurchaseRecord>& purchases, 
+                        const std::string& ticker) const
+{
+    for (const auto& account: m_accounts)
+        appendRecordsOf(account.purchasesOfGivenTicker(ticker), purchases);
+}
+
+void FinancialPortfolio::appendRecordsOf(
+                const std::vector<PurchaseRecord>& records,
+                std::vector<PurchaseRecord>& purchases) const
+{
+        purchases.insert(purchases.end(), records.begin(), records.end());
+}
+
 
 int FinancialPortfolio::shareCount(const std::string& ticker) const
 {
-    return find<Holding>(m_holdings, ticker).shareCount();
+    int totalShareCount{0};
+    for (const auto& account: m_accounts)
+        totalShareCount += account.shareCount(ticker);
+    return totalShareCount;
 }
 
 double FinancialPortfolio::averagePurchasePrice(const std::string& ticker) const
 {
-    return find<Holding>(m_holdings, ticker).averagePurchasePrice();
+    double sum{0.0};
+    for (const auto& account: m_accounts)
+        sum += account.averagePurchasePrice(ticker) 
+               * account.shareCount(ticker);
+    return sum / shareCount(ticker);
 }
 
 double FinancialPortfolio::currentPriceOfShare(const std::string& ticker) const
 {
-    std::string response{yahooFinanceResponse(ticker)};
-    return parsedCurrentPriceFromJson(response);
+    std::string responseFromYahoo{yahooFinanceResponse(ticker)};
+    return parsedCurrentPriceFromJson(responseFromYahoo);
 }
 
 double FinancialPortfolio::parsedCurrentPriceFromJson(
@@ -147,4 +131,11 @@ std::vector<std::string> FinancialPortfolio::singleHoldingInStringVector(
     resultVector.push_back(
             std::to_string((currPrice-avgPrice) * shareCount));
     return resultVector;
+}
+
+std::vector<Account> FinancialPortfolio::accountsOfHolder(
+                                        const std::string& holder) const
+{
+    Account temporaryAccount{};
+    return std::vector<Account>{temporaryAccount};
 }

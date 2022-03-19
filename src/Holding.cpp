@@ -15,26 +15,39 @@ int Holding::shareCount() const
     return std::accumulate(m_purchaseRecords.begin(), 
                            m_purchaseRecords.end(), 
                            0,
-        [] (int total, PurchaseRecord record)
-        {
-            return total + record.shareCount;
-        });
+                [] (int total, PurchaseRecord record)
+                {
+                    return total + record.shareCount;
+                });
 }
 
 double Holding::averagePurchasePrice() const
 {
-    return totalValue() / shareCount();
+    if (shareCount() == 0) return 0.0;
+    return totalPurchaseCost() / purchaseShareCount();
 }
 
-double Holding::totalValue() const
+int Holding::purchaseShareCount() const
 {
     return std::accumulate(m_purchaseRecords.begin(),
-                                   m_purchaseRecords.end(),
-                                   0,
-                           [](double total, PurchaseRecord record)
-                           {
-                                return total 
-                                        + (record.priceOnTransaction
-                                        * record.shareCount);
-                           });
+                           m_purchaseRecords.end(),
+                           0,
+               [] (int total, PurchaseRecord record)
+               {
+                    return (record.shareCount > 0) ?
+                           (total + record.shareCount) : total;
+               });
+}
+
+double Holding::totalPurchaseCost() const
+{
+    return std::accumulate(m_purchaseRecords.begin(),
+                           m_purchaseRecords.end(),
+                           0,
+                   [](double total, const PurchaseRecord& record)
+                   {
+                        return (record.shareCount > 0) ? 
+                               (total + (record.priceOnTransaction
+                                         * record.shareCount)) : total;
+                   });
 }

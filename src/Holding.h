@@ -14,6 +14,7 @@ public:
 
 private:
     std::vector<PurchaseRecord> m_purchaseRecords;
-    double totalValue() const;
+    double totalPurchaseCost() const;
+    int purchaseShareCount() const;
 };
 #endif

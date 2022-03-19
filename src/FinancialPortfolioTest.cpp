@@ -17,6 +17,11 @@ public:
     static const std::string ValidTimestamp;
     static const std::string ValidInterval;
 
+    AFinancialPortfolio()
+    {
+        portfolio.addAccount(Account{});
+    }
+
 protected:
     static const std::string IBM;
     static const std::string SAMSUNG;
@@ -30,8 +35,9 @@ protected:
                   const Date& 
                         transactionDate=AFinancialPortfolio::ArbitraryDate)
     {
-        portfolio.purchase(ticker, 
-                            {shareCount, purchasePrice, transactionDate});
+        portfolio.purchaseForAccount(ticker, 
+                           {shareCount, purchasePrice, transactionDate},
+                           portfolio.m_accounts[0]);
     }
 
     void sell(const std::string& ticker,
@@ -41,8 +47,9 @@ protected:
                         transactionDate=AFinancialPortfolio::ArbitraryDate)
 
     {
-        portfolio.sell(ticker,
-                            {shareCount, salePrice, transactionDate});
+        portfolio.sellForAccount(ticker,
+                            {shareCount, salePrice, transactionDate},
+                            portfolio.m_accounts[0]);
     }
 
     void ASSERT_PURCHASE(PurchaseRecord& purchase, 
@@ -175,7 +182,7 @@ TEST_F(AFinancialPortfolio,
 
 TEST_F(AFinancialPortfolio, AnswersTodayForTransactionDateWhenNotSpecified)
 {
-    portfolio.purchase(SAMSUNG, {10, 100.0});
+    portfolio.purchaseForAccount(SAMSUNG, {10, 100.0}, portfolio.m_accounts[0]);
     auto purchases = portfolio.purchasesOfGivenTicker(SAMSUNG);
 
     ASSERT_THAT(purchases[0].date, Eq(TODAY));
@@ -196,7 +203,7 @@ TEST_F(AFinancialPortfolio, AnswersAveragePurchasePriceOfGivenTicker)
     sell(IBM, 3, 150.0, ArbitraryDate);
 
     ASSERT_THAT(portfolio.averagePurchasePrice(IBM), 
-                DoubleEq((100.0*5 + 200.0*10 - 150.0*3)/(5 + 10 - 3)));
+                DoubleEq((100.0*5 + 200.0*10) / (5 + 10)));
 }
 
 TEST_F(AFinancialPortfolio, MakesHttpRequestToObtainCurrenPriceOfShare)
@@ -238,4 +245,14 @@ TEST_F(AFinancialPortfolio, ReturnsZeroWhenPriceRetrievingFailed)
     double price = portfolio.currentPriceOfShare("");
 
     ASSERT_THAT(price, DoubleEq(0.0)); 
+}
+
+TEST_F(AFinancialPortfolio, AnswersInfoForASingleAccount)
+{
+    auto accounts = portfolio.accountsOfHolder("Chol");
+    auto account = accounts[0];
+
+    ASSERT_THAT(account.holderName(), Eq("Chol"));
+    ASSERT_THAT(account.brokerName(), Eq("IBKR"));
+    ASSERT_THAT(account.accountType(), Eq("TFSA"));
 }

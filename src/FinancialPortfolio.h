@@ -12,40 +12,33 @@
 #include <unordered_map>
 #include <vector>
 
-class ShareCountCannotBeZeroException: public std::exception
-{
-};
-
-class InsufficientSharesException: public std::exception
-{
-};
-
 class FinancialPortfolio
 {
 public:
     friend class WtPortfolioDisplayer;
     bool isEmpty() const;
-    void purchase(const std::string& ticker, 
-                  PurchaseRecord&& record);
-    void sell(const std::string& ticker, 
-              PurchaseRecord&& record);
+    void purchaseForAccount(const std::string& ticker, 
+                  PurchaseRecord&& record,
+                  Account& account);
+    void sellForAccount(const std::string& ticker, 
+              PurchaseRecord&& record,
+              Account& account);
     int shareCount(const std::string& ticker) const;
-    std::vector<PurchaseRecord> purchasesOfGivenTicker(const std::string& ticker) const;
+    std::vector<PurchaseRecord> purchasesOfGivenTicker(
+                            const std::string& ticker) const;
+    void combineAllPurchaseRecordsOfTicker(
+                            std::vector<PurchaseRecord>& purchases,  
+                            const std::string& ticker) const;
     double averagePurchasePrice(const std::string& ticker) const;
+    void appendRecordsOf(const std::vector<PurchaseRecord>& records,
+                            std::vector<PurchaseRecord>& purchases) const;
     double currentPriceOfShare(const std::string& ticker) const;
     void setHttp(std::unique_ptr<Http> http);
+    std::vector<Account> accountsOfHolder(const std::string& holder) const;
+    void addAccount(Account&& account);
+    std::vector<Account> m_accounts;
 
 private:
-    void throwIfNotEnoughSharesToSell(const std::string& ticker,
-                                      const PurchaseRecord& record);
-    void negateShareCountForSale(PurchaseRecord& record);
-    void transact(const std::string& ticker, const PurchaseRecord& record);
-    void throwIfShareCountIsZero(int shareChange) const;
-    void addPurchaseRecord(const std::string& ticker,
-                           const PurchaseRecord& record);
-    bool containsTicker(const std::string& ticker) const;
-    void initializePurchaseRecords(const std::string& ticker);
-    void add(const std::string& ticker, const PurchaseRecord& record);
     std::string yahooFinanceResponse(const std::string& ticker) const;
     std::string yahooFinanceRequestUrl(const std::string& ticker,
                                  const std::string& Timestamp) const;
